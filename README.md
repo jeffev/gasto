@@ -137,12 +137,16 @@ O modelo é um arquivo JSON com vocabulário, pesos IDF e coeficientes do SVC �
 
 ---
 
-## Arquitetura do classificador
-
-O classificador roda 100% em TypeScript no dispositivo:
+## Arquitetura
 
 ```
-texto do usuário
+fala do usuário
+     │
+     ▼ (expo-speech-recognition)
+Google STT  ─── requer internet
+     │
+     ▼
+texto transcrito
      │
      ▼
 normalização (lowercase, remove pontuação, stopwords PT)
@@ -151,11 +155,13 @@ normalização (lowercase, remove pontuação, stopwords PT)
 TF-IDF vectorizer  ←── vocabulário do model.json
      │
      ▼
-LinearSVC predict  ←── coeficientes do model.json
+LinearSVC predict  ←── coeficientes do model.json  ← 100% offline
      │
      ▼
 categoria + top-3 sugestões + extração de valor
 ```
+
+O modo texto (digitado) bypassa o Google STT e vai direto para a normalização — 100% offline.
 
 Para adicionar categorias ou melhorar a acurácia: edite o dataset em `model/data/dataset.csv`, re-treine e exporte.
 

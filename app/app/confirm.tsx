@@ -16,7 +16,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import { inserirDespesa, buscarOrcamento, totalPorCategoria } from "../lib/db";
-import { enviarFeedback } from "../lib/api";
 import { Categoria } from "../lib/types";
 import { CATEGORIAS, getCategoria } from "../constants/categories";
 import { useTheme } from "../lib/theme";
@@ -72,13 +71,6 @@ export default function ConfirmScreen() {
             `${categoria}: R$ ${totalCat.toFixed(2)} de R$ ${orcamento.limite.toFixed(2)} (${Math.round((totalCat / orcamento.limite) * 100)}%)`);
         }
       }
-
-      await enviarFeedback({
-        texto_original: params.input_original ?? descricao,
-        categoria_sugerida: params.categoria_sugerida ?? categoria,
-        categoria_confirmada: categoria,
-        aceito: categoria === params.categoria_sugerida,
-      });
 
       router.back();
     } catch {
