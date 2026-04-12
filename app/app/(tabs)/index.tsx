@@ -248,10 +248,13 @@ export default function HomeScreen() {
           setModoTexto(false);
         }}
       >
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "padding"}
+        >
         <Pressable style={[s.modalBackdrop, { backgroundColor: t.modalBackdrop }]} onPress={() => {
           if (!gravando) { setModalVisivel(false); setTextoInput(""); setModoTexto(false); }
         }}>
-          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={0}>
         <Pressable style={[s.modalSheet, { backgroundColor: t.surface }]} onPress={(e) => e.stopPropagation()}>
             <View style={[s.modalHandle, { backgroundColor: t.handle }]} />
             <Text style={[s.modalTitulo, { color: t.text }]}>Adicionar despesa</Text>
@@ -305,8 +308,8 @@ export default function HomeScreen() {
               </View>
             )}
           </Pressable>
-        </KeyboardAvoidingView>
         </Pressable>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );

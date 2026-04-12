@@ -82,7 +82,6 @@ export async function transcreverOffline(
 
   const { promise } = ctx.transcribe(uri, {
     language: "pt",
-    maxLen: 1,
     tokenTimestamps: false,
   });
 
