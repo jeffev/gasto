@@ -1,4 +1,5 @@
-import { initWhisper, WhisperContext } from "whisper.rn";
+// NÃO importar whisper.rn no topo — é um módulo nativo que trava no Expo Go.
+// O import é feito de forma lazy dentro das funções, só quando necessário.
 import * as FileSystem from "expo-file-system";
 
 // Modelo tiny (~75 MB) — bom custo-benefício para frases curtas em português
@@ -8,7 +9,8 @@ const MODEL_URL =
 const MODEL_DIR = FileSystem.documentDirectory + "whisper/";
 const MODEL_PATH = MODEL_DIR + "ggml-tiny.bin";
 
-let _ctx: WhisperContext | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _ctx: any | null = null;
 
 export type WhisperStatus =
   | { tipo: "idle" }
@@ -23,8 +25,11 @@ export type WhisperStatus =
  */
 export async function prepararWhisper(
   onStatus: (s: WhisperStatus) => void
-): Promise<WhisperContext> {
+): Promise<any> {
   if (_ctx) return _ctx;
+
+  // Import lazy — só executa quando o módulo nativo está disponível (APK/dev build)
+  const { initWhisper } = await import("whisper.rn");
 
   // Garante que o diretório existe
   const dirInfo = await FileSystem.getInfoAsync(MODEL_DIR);
