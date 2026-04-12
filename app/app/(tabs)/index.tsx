@@ -156,8 +156,8 @@ export default function HomeScreen() {
       voiceResultRef.current = "";
       await Voice.start("pt-BR");
       setGravando(true);
-    } catch {
-      Alert.alert("Erro", "Não foi possível iniciar o reconhecimento de voz.");
+    } catch (e: any) {
+      Alert.alert("Erro de voz", e?.message ?? JSON.stringify(e) ?? "Erro desconhecido");
     }
   }
 
