@@ -102,7 +102,7 @@ export default function IncomeScreen() {
   return (
     <SafeAreaView style={[s.safeArea, { backgroundColor: t.bg }]}>
       <View style={s.header}>
-        <Text style={s.headerSub}>gasto · entradas em</Text>
+        <Text style={s.headerSub}>gastô · entradas em</Text>
         <Text style={s.headerMes}>{mesCapitalizado}</Text>
         <Text style={s.headerTotal}>
           {totalMes.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}

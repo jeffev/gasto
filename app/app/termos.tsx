@@ -66,7 +66,7 @@ export default function TermosScreen() {
         </Text>
 
         <Secao titulo="1. Sobre o aplicativo">
-          O Gasto é um aplicativo de controle de finanças pessoais desenvolvido para uso individual. Ele permite registrar despesas e receitas por voz ou texto, com categorização automática e relatórios mensais.
+          O Gastô é um aplicativo de controle de finanças pessoais desenvolvido para uso individual. Ele permite registrar despesas e receitas por voz ou texto, com categorização automática e relatórios mensais.
         </Secao>
 
         <Secao titulo="2. Armazenamento de dados">
@@ -92,7 +92,7 @@ export default function TermosScreen() {
         </Secao>
 
         <Secao titulo="6. Responsabilidade financeira">
-          O Gasto é uma ferramenta de organização pessoal. As informações exibidas dependem inteiramente dos dados inseridos pelo usuário.{"\n\n"}
+          O Gastô é uma ferramenta de organização pessoal. As informações exibidas dependem inteiramente dos dados inseridos pelo usuário.{"\n\n"}
           O aplicativo não oferece consultoria financeira, contábil ou de investimentos. Decisões financeiras são de responsabilidade exclusiva do usuário.{"\n\n"}
           A categorização automática por inteligência artificial pode cometer erros. Sempre verifique os valores e categorias antes de confirmar um lançamento.
         </Secao>

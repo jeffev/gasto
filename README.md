@@ -1,4 +1,4 @@
-# Gasto
+# Gastô
 
 App de finanças pessoais para Android com registro de despesas por voz ou texto, categorização automática offline e relatórios mensais.
 

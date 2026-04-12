@@ -184,7 +184,7 @@ export default function HomeScreen() {
     <SafeAreaView style={[s.safeArea, { backgroundColor: t.bg }]}>
       {/* Cabeçalho */}
       <View style={s.header}>
-        <Text style={s.headerSub}>gasto · gastos em</Text>
+        <Text style={s.headerSub}>gastô · gastos em</Text>
         <Text style={s.headerMes}>{mesCapitalizado}</Text>
         <Text style={s.headerTotal}>
           {totalMes.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
