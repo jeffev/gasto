@@ -6,7 +6,6 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Modal,
-  PermissionsAndroid,
   Platform,
   Pressable,
   StyleSheet,
@@ -16,7 +15,10 @@ import {
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Voice, { SpeechResultsEvent, SpeechErrorEvent } from "@react-native-voice/voice";
+import {
+  ExpoSpeechRecognitionModule,
+  useSpeechRecognitionEvent,
+} from "expo-speech-recognition";
 
 import {
   listarDespesas,
@@ -57,20 +59,14 @@ export default function HomeScreen() {
     }, [])
   );
 
-  useEffect(() => {
-    Voice.onSpeechResults = (e: SpeechResultsEvent) => {
-      if (e.value?.[0]) voiceResultRef.current = e.value[0];
-    };
-    Voice.onSpeechPartialResults = (e: SpeechResultsEvent) => {
-      if (e.value?.[0]) voiceResultRef.current = e.value[0];
-    };
-    Voice.onSpeechError = (e: SpeechErrorEvent) => {
-      console.warn("Voice error:", e.error);
-    };
-    return () => {
-      Voice.destroy().then(Voice.removeAllListeners);
-    };
-  }, []);
+  useSpeechRecognitionEvent("result", (e) => {
+    const transcript = e.results[0]?.transcript ?? "";
+    if (transcript) voiceResultRef.current = transcript;
+  });
+
+  useSpeechRecognitionEvent("end", () => {
+    // reconhecimento finalizado — pararGravacao já lida com o resultado
+  });
 
   async function carregarDados(scrollToTop = false) {
     const agora = new Date();
@@ -146,18 +142,16 @@ export default function HomeScreen() {
 
   async function iniciarGravacao() {
     try {
-      if (Platform.OS === "android") {
-        const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO);
-        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          Alert.alert("Permissão necessária", "Ative o microfone nas configurações.");
-          return;
-        }
+      const { granted } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+      if (!granted) {
+        Alert.alert("Permissão necessária", "Ative o microfone nas configurações.");
+        return;
       }
       voiceResultRef.current = "";
-      await Voice.start("pt-BR");
+      ExpoSpeechRecognitionModule.start({ lang: "pt-BR", interimResults: true });
       setGravando(true);
     } catch (e: any) {
-      Alert.alert("Erro de voz", e?.message ?? JSON.stringify(e) ?? "Erro desconhecido");
+      Alert.alert("Erro", e?.message ?? "Não foi possível iniciar o reconhecimento de voz.");
     }
   }
 
@@ -167,8 +161,8 @@ export default function HomeScreen() {
     setCarregando(true);
     setModalVisivel(false);
     try {
-      await Voice.stop();
-      // Aguarda resultado final do Google STT
+      ExpoSpeechRecognitionModule.stop();
+      // Aguarda resultado final
       await new Promise((r) => setTimeout(r, 600));
       const texto = voiceResultRef.current.trim();
       if (!texto) throw new Error("Nenhuma fala detectada. Tente novamente.");

@@ -38,6 +38,7 @@
       "expo-sqlite",
       "expo-router",
       "expo-audio",
+      "expo-speech-recognition",
       "@react-native-community/datetimepicker"
     ]
   }
