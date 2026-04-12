@@ -93,10 +93,13 @@ em   { font-style: normal; color: var(--purple); font-weight: 500; }
   justify-content: space-between;
 }
 .nav-logo {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--text);
-  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+}
+.nav-logo-img {
+  height: 40px;
+  width: auto;
+  display: block;
 }
 .nav-links {
   display: flex;
@@ -605,7 +608,7 @@ em   { font-style: normal; color: var(--purple); font-weight: 500; }
   font-size: 0.85rem;
   color: rgba(255,255,255,.4);
 }
-.footer-logo { font-weight: 800; font-size: 1rem; color: #fff; }
+.footer-logo-img { height: 36px; width: auto; display: block; filter: brightness(0) invert(1); opacity: 0.85; }
 .footer a { color: rgba(255,255,255,.6); transition: color .15s; }
 .footer a:hover { color: #fff; }
 
