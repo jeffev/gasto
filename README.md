@@ -1,104 +1,126 @@
 # Gastô
 
-App de finanças pessoais para Android com registro de despesas por voz ou texto, categorização automática offline e relatórios mensais.
+> App Android de finanças pessoais com registro por voz e texto, classificação automática offline e relatórios mensais.
 
-## Funcionalidades
-
-- **Registro por voz** — fala "uber vinte reais" e o app categoriza e extrai o valor
-- **Registro por texto** — digita em linguagem natural, mesmo resultado
-- **Classificação offline** — TF-IDF + LinearSVC rodando no próprio celular (sem internet)
-- **Transcrição por voz** — Whisper (OpenAI) rodando localmente via backend Python
-- **Entradas e despesas** — controle de receitas separado dos gastos
-- **Despesas recorrentes** — lançamentos que se repetem todo mês automaticamente
-- **Orçamento por categoria** — define limites e recebe alerta ao ultrapassar
-- **Meta de economia** — acompanha quanto sobrou do mês vs. a meta definida
-- **Relatórios mensais** — gráfico de pizza, gastos por dia, maiores despesas, saldo
-- **Navegação entre meses** — histórico completo de qualquer mês
-- **Exportar CSV** — compartilha os dados do mês em planilha
-- **Modo escuro** — segue o tema do sistema automaticamente
-- **Banco local** — todos os dados ficam no celular (SQLite), sem servidor de dados
+[![Download APK](https://img.shields.io/badge/Download-APK-6C63FF?style=for-the-badge&logo=android)](https://github.com/jeffev/gasto/releases/latest/download/gasto.apk)
+[![GitHub Pages](https://img.shields.io/badge/Site-GitHub%20Pages-222?style=for-the-badge&logo=github)](https://jeffev.github.io/gasto/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 ---
 
-## Estrutura do projeto
+## Como funciona
+
+O usuário fala ou digita algo como *"uber vinte reais"*. O app transcreve a fala via Google STT nativo do Android, extrai o valor e prediz a categoria usando um modelo TF-IDF + LinearSVC que roda **localmente no celular**, e salva no SQLite — sem servidor de dados, sem cadastro.
+
+---
+
+## Funcionalidades
+
+| | Funcionalidade |
+|---|---|
+| 🎙️ | Registro por voz em linguagem natural (Google STT) |
+| ⌨️ | Registro por texto — mesmo resultado |
+| 🤖 | Classificação offline (TF-IDF + LinearSVC em TypeScript) |
+| 💰 | Entradas e despesas separadas |
+| 🔄 | Despesas recorrentes automáticas |
+| 🎯 | Orçamento por categoria com alertas |
+| 📈 | Meta de economia mensal |
+| 📊 | Relatórios com gráfico de distribuição e gastos por dia |
+| 🗓️ | Histórico de qualquer mês |
+| 📤 | Exportar CSV |
+| 🌙 | Modo escuro automático |
+| 🔒 | 100% local — SQLite no dispositivo |
+
+---
+
+## Estrutura do repositório
 
 ```
-financa/
-├── app/                  # React Native (Expo)
+gasto/
+├── app/                        # React Native (Expo SDK 54)
 │   ├── app/
 │   │   ├── (tabs)/
 │   │   │   ├── index.tsx       # Aba Despesas
 │   │   │   ├── income.tsx      # Aba Entradas
 │   │   │   └── reports.tsx     # Aba Relatórios
-│   │   ├── confirm.tsx         # Confirmação de nova despesa
-│   │   ├── edit.tsx            # Edição de despesa
+│   │   ├── confirm.tsx         # Confirmação/edição antes de salvar
+│   │   ├── edit.tsx            # Edição de despesa existente
 │   │   ├── add-entrada.tsx     # Nova entrada de receita
-│   │   └── budget.tsx          # Orçamentos por categoria
+│   │   ├── budget.tsx          # Orçamentos por categoria
+│   │   └── termos.tsx          # Termos de uso / privacidade
 │   ├── components/
-│   │   └── ExpenseItem.tsx     # Card de despesa com swipe
+│   │   └── ExpenseItem.tsx     # Card com swipe para deletar
 │   ├── lib/
-│   │   ├── db.ts               # SQLite (expo-sqlite)
-│   │   ├── api.ts              # Comunicação com backend
-│   │   ├── classifier.ts       # Classificador offline (TF-IDF + LinearSVC)
-│   │   ├── theme.ts            # Modo claro / escuro
-│   │   └── types.ts            # Tipos TypeScript
+│   │   ├── db.ts               # Camada SQLite (expo-sqlite)
+│   │   ├── api.ts              # parseTexto
+│   │   ├── classifier.ts       # Inferência TF-IDF + LinearSVC offline
+│   │   ├── theme.ts            # Tokens de cor claro/escuro
+│   │   └── types.ts            # Tipos TypeScript compartilhados
 │   ├── constants/
-│   │   ├── categories.ts       # Categorias de despesa
-│   │   └── incomeCategories.ts # Categorias de entrada
+│   │   ├── categories.ts       # 9 categorias de despesa
+│   │   └── incomeCategories.ts # 6 categorias de entrada
 │   └── assets/
-│       └── model.json          # Modelo exportado (gerado por export_model.py)
+│       └── model.json          # Modelo exportado pelo export_model.py
 │
-├── backend/              # Python / FastAPI
-│   ├── main.py                 # Servidor (transcrição de áudio)
-│   ├── classifier.py           # Wrapper do modelo sklearn
+├── backend/                    # Python / FastAPI (legado, não utilizado pelo app)
+│   ├── main.py                 # Endpoint /transcribe (Whisper) e /feedback
+│   ├── classifier.py           # Wrapper sklearn para re-treino online
 │   └── requirements.txt
 │
-└── model/                # Treinamento do classificador
-    ├── train.py                # Treina TF-IDF + LinearSVC
-    ├── export_model.py         # Exporta modelo para JSON (app/assets/model.json)
-    ├── generate_dataset.py     # Gera dataset sintético
-    └── data/
-        ├── dataset.csv         # Dataset de treino
-        └── modelo.pkl          # Modelo treinado (gerado por train.py)
+├── model/                      # Pipeline de treinamento do classificador
+│   ├── generate_dataset.py     # Gera dataset sintético em português
+│   ├── train.py                # Treina TF-IDF + LinearSVC
+│   ├── export_model.py         # Exporta modelo para app/assets/model.json
+│   └── data/
+│       └── dataset.csv         # Dataset de treino (versionado)
+│
+└── docs/                       # Site GitHub Pages
 ```
 
 ---
 
-## Pré-requisitos
+## Stack
 
-- Node.js 18+
-- Python 3.11+ (para o backend de voz)
-- [Expo Go](https://expo.dev/go) no celular (ou Android Studio para emulador)
-- ffmpeg instalado no sistema (para o Whisper transcrever áudio)
+| Camada | Tecnologia | Notas |
+|---|---|---|
+| App | React Native 0.81 + Expo SDK 54 | TypeScript, bare workflow |
+| Navegação | Expo Router 6 (file-based) | |
+| Banco de dados | SQLite via `expo-sqlite` | Local, sem sincronização |
+| Classificador | TF-IDF + LinearSVC | sklearn → JSON → TS, roda no device |
+| Transcrição de voz | Google STT nativo (`@react-native-voice/voice`) | Requer internet; usa o reconhecedor embutido no Android |
+| Gráficos | `react-native-svg` | |
+| Animações | `react-native-reanimated` 4.x | Requer New Architecture |
 
 ---
 
-## Setup
+## Setup local
 
-### 1. App (React Native)
+### Pré-requisitos
+
+- Node.js 18+
+- Android Studio com SDK 34+ (ou dispositivo físico)
+- Python 3.11+ (somente para backend/modelo)
+
+### 1. App
 
 ```bash
 cd app
 npm install
-npx expo start --android
+npx expo start
 ```
 
-Escaneie o QR code com o Expo Go ou pressione `a` para abrir no emulador.
+> O app usa `newArchEnabled: true` (New Architecture). Para rodar no Expo Go, o módulo `whisper.rn` é importado de forma lazy e não afeta o bundle.
 
-### 2. Backend de voz (opcional — só necessário para gravação de voz)
+### 2. Gerar APK de release
 
 ```bash
-cd backend
-pip install -r requirements.txt
-pip install openai-whisper
-uvicorn main:app --host 0.0.0.0 --port 8000
+cd app
+npx expo prebuild --platform android --clean
+echo "sdk.dir=$HOME/Android/Sdk" > android/local.properties   # ajuste o caminho
+cd android && ./gradlew assembleRelease
 ```
 
-Edite `app/lib/api.ts` e troque o IP pelo IP da sua máquina na rede local:
-
-```ts
-export const API_URL = "http://SEU_IP:8000";
-```
+APK gerado em `android/app/build/outputs/apk/release/app-release.apk`.
 
 ### 3. Re-treinar o classificador (opcional)
 
@@ -106,53 +128,68 @@ export const API_URL = "http://SEU_IP:8000";
 cd model
 pip install -r requirements.txt
 
-# Treina o modelo
-python train.py
-
-# Exporta para o app
-python export_model.py
+python generate_dataset.py   # regenera dataset sintético
+python train.py              # treina TF-IDF + LinearSVC
+python export_model.py       # grava app/assets/model.json
 ```
 
-O arquivo `app/assets/model.json` será gerado automaticamente.
+O modelo é um arquivo JSON com vocabulário, pesos IDF e coeficientes do SVC — sem dependência de runtime Python no app.
 
 ---
 
-## Tecnologias
+## Arquitetura do classificador
 
-| Camada | Tecnologia |
-|---|---|
-| App | React Native + Expo SDK 54 |
-| Navegação | Expo Router v3 |
-| Banco de dados | SQLite via expo-sqlite |
-| Classificador | TF-IDF + LinearSVC (sklearn → JSON → TypeScript) |
-| Transcrição de voz | OpenAI Whisper "small" |
-| Backend | FastAPI + Python |
-| Gráficos | react-native-svg |
+O classificador roda 100% em TypeScript no dispositivo:
 
----
+```
+texto do usuário
+     │
+     ▼
+normalização (lowercase, remove pontuação, stopwords PT)
+     │
+     ▼
+TF-IDF vectorizer  ←── vocabulário do model.json
+     │
+     ▼
+LinearSVC predict  ←── coeficientes do model.json
+     │
+     ▼
+categoria + top-3 sugestões + extração de valor
+```
 
-## GitHub Pages
-
-O site da aplicação está disponível em:
-
-- https://jeffev.github.io/gasto/
-
-> Para publicar corretamente, mantenha o conteúdo do site em `docs/` e deixe o GitHub Pages apontado para essa pasta.
-
-## Download do APK
-
-Baixe o APK Android a partir do release mais recente:
-
-- https://github.com/jeffev/gasto/releases/latest/download/gasto.apk
-
-> Caso ainda não exista o arquivo, crie um release no GitHub e carregue `gasto.apk` como asset.
+Para adicionar categorias ou melhorar a acurácia: edite o dataset em `model/data/dataset.csv`, re-treine e exporte.
 
 ---
 
-## Categorias de despesa
+## Como contribuir
 
-Alimentação · Transporte · Saúde · Lazer · Casa · Educação · Assinaturas · Vestuário · Outros
+Contribuições são bem-vindas. Algumas áreas abertas:
 
-## Categorias de entrada
+- **Voz offline** — atualmente usa Google STT (requer internet); contribuições para transcrição 100% offline são bem-vindas (ex: vosk-react-native, sherpa-onnx)
+- **Testes automatizados** — o projeto não tem testes; testes unitários para `classifier.ts` e `db.ts` seriam um bom começo
+- **iOS** — o app foi desenvolvido e testado apenas em Android; a estrutura Expo suporta iOS mas não foi validado
+- **Sincronização opcional** — exportação para nuvem (iCloud / Google Drive) sem comprometer o modelo local-first
+- **Melhorias no dataset** — mais exemplos no `dataset.csv` melhoram diretamente a acurácia da classificação
 
-Salário · Freelance · Investimentos · Aluguel recebido · Presente · Outros
+### Fluxo
+
+```bash
+# 1. Fork + clone
+git clone https://github.com/SEU_USUARIO/gasto.git
+
+# 2. Crie uma branch
+git checkout -b feat/minha-contribuicao
+
+# 3. Faça as alterações e commit
+git commit -m "feat: descrição clara do que foi feito"
+
+# 4. Abra um Pull Request para main
+```
+
+---
+
+## Links
+
+- **Site:** https://jeffev.github.io/gasto/
+- **Download APK:** https://github.com/jeffev/gasto/releases/latest/download/gasto.apk
+- **Issues / sugestões:** https://github.com/jeffev/gasto/issues
