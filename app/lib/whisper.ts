@@ -29,7 +29,12 @@ export async function prepararWhisper(
   if (_ctx) return _ctx;
 
   // Import lazy — só executa quando o módulo nativo está disponível (APK/dev build)
-  const { initWhisper } = await import("whisper.rn");
+  let initWhisper: any;
+  try {
+    ({ initWhisper } = await import("whisper.rn"));
+  } catch (e) {
+    throw new Error("Transcrição offline não disponível neste dispositivo. Use o modo texto.");
+  }
 
   // Garante que o diretório existe
   const dirInfo = await FileSystem.getInfoAsync(MODEL_DIR);
