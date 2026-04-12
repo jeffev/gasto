@@ -1,7 +1,8 @@
 import { ParseResult } from "./types";
 import { classificarTexto } from "./classifier";
+import { transcreverOffline, WhisperStatus } from "./whisper";
 
-// Usado apenas para transcrição de áudio (Whisper roda no backend)
+// Backend legado — usado apenas como fallback manual se necessário
 export const API_URL = "http://192.168.0.3:8000";
 
 /**
@@ -12,24 +13,15 @@ export async function parseTexto(texto: string): Promise<ParseResult> {
   return classificarTexto(texto);
 }
 
-export async function transcreverAudio(uri: string): Promise<string> {
-  const formData = new FormData();
-  formData.append("audio", {
-    uri,
-    name: "audio.m4a",
-    type: "audio/m4a",
-  } as any);
-
-  const res = await fetch(`${API_URL}/transcribe`, {
-    method: "POST",
-    body: formData,
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail ?? "Erro ao transcrever áudio");
-  }
-  const data = await res.json();
-  return data.texto as string;
+/**
+ * Transcreve áudio usando Whisper tiny rodando localmente no dispositivo.
+ * Na primeira chamada, baixa o modelo (~75 MB) e o mantém em cache.
+ */
+export async function transcreverAudio(
+  uri: string,
+  onStatus: (s: WhisperStatus) => void
+): Promise<string> {
+  return transcreverOffline(uri, onStatus);
 }
 
 export async function enviarFeedback(params: {

@@ -28,6 +28,7 @@ import {
   gerarEntradasRecorrentesDoMes,
 } from "../../lib/db";
 import { parseTexto, transcreverAudio } from "../../lib/api";
+import { WhisperStatus } from "../../lib/whisper";
 import { Despesa } from "../../lib/types";
 import { useTheme } from "../../lib/theme";
 import ExpenseItem from "../../components/ExpenseItem";
@@ -46,6 +47,7 @@ export default function HomeScreen() {
   const [modoTexto, setModoTexto] = useState(false);
 
   const [gravando, setGravando] = useState(false);
+  const [whisperStatus, setWhisperStatus] = useState<WhisperStatus>({ tipo: "idle" });
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const flatListRef = useRef<FlatList>(null);
@@ -156,7 +158,7 @@ export default function HomeScreen() {
       await recorder.stop();
       const uri = recorder.uri;
       if (!uri) throw new Error("Arquivo de áudio não encontrado.");
-      const texto = await transcreverAudio(uri);
+      const texto = await transcreverAudio(uri, setWhisperStatus);
       const resultado = await parseTexto(texto);
       router.push({
         pathname: "/confirm",
@@ -217,7 +219,12 @@ export default function HomeScreen() {
       {carregando && (
         <View style={s.loadingOverlay}>
           <ActivityIndicator size="large" color="#6C63FF" />
-          <Text style={s.loadingText}>Processando...</Text>
+          <Text style={s.loadingText}>{labelWhisper(whisperStatus)}</Text>
+          {whisperStatus.tipo === "baixando" && (
+            <View style={s.progressBarBg}>
+              <View style={[s.progressBarFill, { width: `${whisperStatus.progresso}%` as any }]} />
+            </View>
+          )}
         </View>
       )}
 
@@ -343,4 +350,15 @@ const s = StyleSheet.create({
   sendBtn: { backgroundColor: "#6C63FF", borderRadius: 12, paddingVertical: 14, alignItems: "center" },
   sendBtnDisabled: { backgroundColor: "#C4C2E8" },
   sendBtnText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  progressBarBg: { marginTop: 16, width: 220, height: 6, backgroundColor: "#E0DEFF", borderRadius: 3, overflow: "hidden" },
+  progressBarFill: { height: 6, backgroundColor: "#6C63FF", borderRadius: 3 },
 });
+
+function labelWhisper(s: WhisperStatus): string {
+  switch (s.tipo) {
+    case "baixando": return `Baixando modelo de voz… ${s.progresso}%`;
+    case "carregando": return "Carregando modelo…";
+    case "transcrevendo": return "Transcrevendo áudio…";
+    default: return "Processando…";
+  }
+}
