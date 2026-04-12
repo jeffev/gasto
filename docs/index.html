@@ -3,154 +3,368 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gasto — App de Finanças Pessoais</title>
-  <meta name="description" content="App Android gratuito para controle de despesas com registro por voz, classificação automática offline e relatórios mensais.">
+  <title>Gasto — Controle financeiro sem complicação</title>
+  <meta name="description" content="App Android gratuito para controle de despesas com registro por voz ou texto, classificação automática offline e relatórios mensais.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <header class="hero">
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="nav-logo" href="#">💸 Gasto</a>
+      <div class="nav-links">
+        <a href="#features">Funcionalidades</a>
+        <a href="#screenshots">Screenshots</a>
+        <a href="#install">Instalar</a>
+        <a class="nav-cta" href="https://github.com/jeffev/gasto/releases/latest/download/gasto.apk">Baixar APK</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <div class="hero-tag">Android · Gratuito · Open Source</div>
+        <h1>Suas finanças<br><span class="gradient-text">no controle</span></h1>
+        <p class="hero-desc">Registre despesas falando ou digitando em linguagem natural. O Gasto categoriza automaticamente, sem internet e sem servidor.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://github.com/jeffev/gasto/releases/latest/download/gasto.apk">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar APK
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/jeffev/gasto" target="_blank" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            Ver código
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><strong>100%</strong><span>Offline</span></div>
+          <div class="stat-div"></div>
+          <div class="stat"><strong>0</strong><span>Servidores de dados</span></div>
+          <div class="stat-div"></div>
+          <div class="stat"><strong>9</strong><span>Categorias</span></div>
+        </div>
+      </div>
+      <div class="hero-phone">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <img src="screenshots/despesas.jpg" alt="Tela de despesas do Gasto" class="phone-screen">
+        </div>
+        <div class="phone-glow-behind"></div>
+      </div>
+    </div>
+    <div class="hero-wave">
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="var(--bg)"/></svg>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how">
     <div class="container">
-      <div class="hero-badge">Android · Gratuito · Open Source</div>
-      <h1>Gasto</h1>
-      <p class="hero-sub">Controle suas finanças por voz ou texto.<br>Classificação automática, sem internet.</p>
+      <div class="section-header">
+        <div class="section-tag">Como funciona</div>
+        <h2>Registrar uma despesa<br>leva 5 segundos</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-icon">🎙️</div>
+          <h3>Fale ou digite</h3>
+          <p>Diga <em>"uber vinte reais"</em> ou <em>"almoço 35"</em> em linguagem natural, sem formulários.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-icon">🤖</div>
+          <h3>Classificação automática</h3>
+          <p>O modelo de IA local detecta a categoria, extrai o valor e a data sem precisar de internet.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-icon">✅</div>
+          <h3>Confirme e salve</h3>
+          <p>Revise, ajuste se quiser, e confirme. O lançamento fica salvo no banco local do celular.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section section-alt" id="features">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Funcionalidades</div>
+        <h2>Tudo que você precisa,<br>nada que você não precisa</h2>
+      </div>
+      <div class="features-grid">
+
+        <div class="feature-card feature-highlight">
+          <div class="feature-emoji">🧠</div>
+          <h3>IA 100% offline</h3>
+          <p>Classificador TF-IDF + LinearSVC treinado em português e exportado direto para o app. Nenhum dado sai do seu celular.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">📊</div>
+          <h3>Relatórios mensais</h3>
+          <p>Gráfico de distribuição por categoria, gastos por dia, maiores despesas e saldo do mês — tudo em uma tela.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">🎯</div>
+          <h3>Metas e orçamentos</h3>
+          <p>Defina um limite por categoria e uma meta de economia. O app avisa quando você está se aproximando do limite.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">🔄</div>
+          <h3>Despesas recorrentes</h3>
+          <p>Marque uma despesa como recorrente e ela será lançada automaticamente todo mês. Aluguel, assinaturas, financiamentos.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">💰</div>
+          <h3>Entradas e saídas</h3>
+          <p>Controle receitas separadamente: salário, freelance, investimentos, aluguel recebido. Veja o saldo real do mês.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">📤</div>
+          <h3>Exportar CSV</h3>
+          <p>Compartilhe os dados do mês como planilha para usar no Excel, Google Sheets ou qualquer ferramenta que quiser.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">🗓️</div>
+          <h3>Histórico completo</h3>
+          <p>Navegue por qualquer mês anterior. Todo o histórico fica salvo localmente, disponível a qualquer momento.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">🌙</div>
+          <h3>Modo escuro</h3>
+          <p>Segue o tema do sistema automaticamente. Sem configuração, sem toggle manual — simplesmente funciona.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">🔒</div>
+          <h3>Dados só seus</h3>
+          <p>Banco SQLite local no celular. Sem cadastro, sem login, sem nuvem. Seus dados financeiros ficam apenas com você.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREENSHOTS -->
+  <section class="section" id="screenshots">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">O app na prática</div>
+        <h2>Interface limpa,<br>informação direta</h2>
+      </div>
+      <div class="screenshots-row">
+        <div class="screenshot-item">
+          <div class="phone-mini">
+            <img src="screenshots/despesas.jpg" alt="Lista de despesas">
+          </div>
+          <p class="screenshot-label">Despesas do mês</p>
+        </div>
+        <div class="screenshot-item screenshot-featured">
+          <div class="phone-mini">
+            <img src="screenshots/relatorios.jpg" alt="Relatório mensal">
+          </div>
+          <p class="screenshot-label">Relatório mensal</p>
+        </div>
+        <div class="screenshot-item">
+          <div class="phone-mini">
+            <img src="screenshots/confirmar.jpg" alt="Confirmar despesa">
+          </div>
+          <p class="screenshot-label">Confirmar despesa</p>
+        </div>
+        <div class="screenshot-item">
+          <div class="phone-mini">
+            <img src="screenshots/entradas.jpg" alt="Entradas">
+          </div>
+          <p class="screenshot-label">Entradas</p>
+        </div>
+        <div class="screenshot-item">
+          <div class="phone-mini">
+            <img src="screenshots/orcamento.jpg" alt="Orçamento por categoria">
+          </div>
+          <p class="screenshot-label">Orçamento</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Categorias</div>
+        <h2>Cobre tudo do dia a dia</h2>
+      </div>
+      <div class="categories">
+        <div class="cat-group">
+          <p class="cat-group-label">Despesas</p>
+          <div class="cat-pills">
+            <span>🍽️ Alimentação</span>
+            <span>🚗 Transporte</span>
+            <span>💊 Saúde</span>
+            <span>🎬 Lazer</span>
+            <span>🏠 Casa</span>
+            <span>📚 Educação</span>
+            <span>📱 Assinaturas</span>
+            <span>👕 Vestuário</span>
+            <span>📦 Outros</span>
+          </div>
+        </div>
+        <div class="cat-group">
+          <p class="cat-group-label">Entradas</p>
+          <div class="cat-pills cat-pills-income">
+            <span>💼 Salário</span>
+            <span>💻 Freelance</span>
+            <span>📈 Investimentos</span>
+            <span>🏘️ Aluguel recebido</span>
+            <span>🎁 Presente</span>
+            <span>📦 Outros</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTALL -->
+  <section class="section" id="install">
+    <div class="container">
+      <div class="install-wrapper">
+        <div class="install-text">
+          <div class="section-tag">Instalação</div>
+          <h2>Pronto em<br>3 passos</h2>
+          <p class="install-desc">Não está na Play Store — é distribuído diretamente pelo GitHub. Isso mantém o projeto gratuito e sem rastreadores.</p>
+          <ol class="install-steps">
+            <li>
+              <div class="step-circle">1</div>
+              <div>
+                <strong>Baixe o APK</strong>
+                <span>Toque no botão abaixo para baixar a versão mais recente do GitHub Releases.</span>
+              </div>
+            </li>
+            <li>
+              <div class="step-circle">2</div>
+              <div>
+                <strong>Permita a instalação</strong>
+                <span>No Android, vá em <em>Configurações → Segurança → Instalar apps desconhecidos</em> e habilite para o seu gerenciador de arquivos.</span>
+              </div>
+            </li>
+            <li>
+              <div class="step-circle">3</div>
+              <div>
+                <strong>Instale e abra</strong>
+                <span>Abra o arquivo APK baixado, toque em Instalar e comece a usar. Sem cadastro necessário.</span>
+              </div>
+            </li>
+          </ol>
+          <a class="btn btn-primary btn-lg" href="https://github.com/jeffev/gasto/releases/latest/download/gasto.apk">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar gasto.apk
+          </a>
+          <p class="req-note">Requer Android 7.0+ · ~90 MB</p>
+        </div>
+        <div class="install-phone">
+          <div class="phone-frame phone-frame-sm">
+            <div class="phone-notch"></div>
+            <img src="screenshots/confirmar.jpg" alt="Tela de confirmação de despesa">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Tecnologia</div>
+        <h2>Stack moderna,<br>decisões inteligentes</h2>
+      </div>
+      <div class="tech-grid">
+        <div class="tech-card">
+          <div class="tech-icon">⚛️</div>
+          <div class="tech-info">
+            <strong>React Native + Expo SDK 54</strong>
+            <span>Interface nativa para Android com desenvolvimento em TypeScript</span>
+          </div>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">🗄️</div>
+          <div class="tech-info">
+            <strong>SQLite via expo-sqlite</strong>
+            <span>Banco de dados relacional local — zero dependência de servidor</span>
+          </div>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">🧮</div>
+          <div class="tech-info">
+            <strong>TF-IDF + LinearSVC</strong>
+            <span>Modelo sklearn exportado para JSON e executado em TypeScript, offline</span>
+          </div>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">🎤</div>
+          <div class="tech-info">
+            <strong>Whisper (OpenAI local)</strong>
+            <span>Transcrição de voz rodando via backend Python na rede local</span>
+          </div>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">⚡</div>
+          <div class="tech-info">
+            <strong>FastAPI + Python</strong>
+            <span>Backend leve para transcrição de áudio — opcional, só para voz</span>
+          </div>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">📐</div>
+          <div class="tech-info">
+            <strong>react-native-svg</strong>
+            <span>Gráficos vetoriais para os relatórios mensais sem dependências pesadas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER CTA -->
+  <section class="footer-cta">
+    <div class="container">
+      <h2>Comece hoje,<br>é gratuito</h2>
+      <p>Código aberto, sem rastreadores, sem anúncios.<br>Seus dados ficam só no seu celular.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="https://github.com/jeffev/gasto/releases/latest/download/gasto.apk">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <a class="btn btn-primary btn-lg" href="https://github.com/jeffev/gasto/releases/latest/download/gasto.apk">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Baixar APK
         </a>
-        <a class="btn btn-outline" href="https://github.com/jeffev/gasto" target="_blank" rel="noopener">
+        <a class="btn btn-ghost" href="https://github.com/jeffev/gasto" target="_blank" rel="noopener">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
-          Ver no GitHub
+          GitHub
         </a>
       </div>
     </div>
-  </header>
+  </section>
 
-  <main class="container">
-
-    <!-- Screenshots -->
-    <section class="section">
-      <h2 class="section-title">Capturas de tela</h2>
-      <div class="screenshots">
-        <img src="screenshots/despesas.jpg" alt="Tela de despesas">
-        <img src="screenshots/confirmar.jpg" alt="Confirmar nova despesa">
-        <img src="screenshots/entradas.jpg" alt="Tela de entradas">
-        <img src="screenshots/relatorios.jpg" alt="Relatório mensal">
-        <img src="screenshots/orcamento.jpg" alt="Orçamento por categoria">
-      </div>
-    </section>
-
-    <!-- Features -->
-    <section class="section">
-      <h2 class="section-title">Funcionalidades</h2>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">🎙️</div>
-          <h3>Registro por voz</h3>
-          <p>Fala "uber vinte reais" e o app categoriza e extrai o valor automaticamente.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">⌨️</div>
-          <h3>Registro por texto</h3>
-          <p>Digite em linguagem natural — mesmo resultado do modo voz, sem complicação.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🤖</div>
-          <h3>Classificação offline</h3>
-          <p>TF-IDF + LinearSVC rodando direto no celular. Sem internet, sem servidor.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">📊</div>
-          <h3>Relatórios mensais</h3>
-          <p>Gráfico de pizza, gastos por dia, maiores despesas e saldo do mês.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🎯</div>
-          <h3>Orçamento e metas</h3>
-          <p>Defina limites por categoria e acompanhe sua meta de economia mensal.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔄</div>
-          <h3>Despesas recorrentes</h3>
-          <p>Lançamentos que se repetem todo mês automaticamente, sem retrabalho.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">💰</div>
-          <h3>Entradas e saídas</h3>
-          <p>Controle de receitas separado dos gastos, com categorias específicas.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">📤</div>
-          <h3>Exportar CSV</h3>
-          <p>Compartilhe os dados do mês em planilha para usar onde quiser.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🌙</div>
-          <h3>Modo escuro</h3>
-          <p>Segue o tema do sistema automaticamente. Zero configuração necessária.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Download / Install -->
-    <section class="section">
-      <div class="card install-card">
-        <h2>Como instalar</h2>
-        <ol class="install-steps">
-          <li>
-            <span class="step-num">1</span>
-            <div>
-              <strong>Baixe o APK</strong>
-              <p>Clique no botão abaixo para baixar a versão mais recente.</p>
-            </div>
-          </li>
-          <li>
-            <span class="step-num">2</span>
-            <div>
-              <strong>Habilite fontes desconhecidas</strong>
-              <p>No Android, vá em <em>Configurações → Segurança → Instalar apps desconhecidos</em> e permita para o seu gerenciador de arquivos.</p>
-            </div>
-          </li>
-          <li>
-            <span class="step-num">3</span>
-            <div>
-              <strong>Instale e abra</strong>
-              <p>Abra o arquivo APK baixado e toque em Instalar. Pronto!</p>
-            </div>
-          </li>
-        </ol>
-        <a class="btn btn-primary btn-lg" href="https://github.com/jeffev/gasto/releases/latest/download/gasto.apk">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Baixar gasto.apk
-        </a>
-        <p class="req-note">Requer Android 7.0 ou superior</p>
-      </div>
-    </section>
-
-    <!-- Tech stack -->
-    <section class="section">
-      <h2 class="section-title">Tecnologias</h2>
-      <div class="tech-grid">
-        <div class="tech-item"><span class="tech-label">App</span>React Native + Expo SDK 54</div>
-        <div class="tech-item"><span class="tech-label">Navegação</span>Expo Router</div>
-        <div class="tech-item"><span class="tech-label">Banco</span>SQLite (expo-sqlite)</div>
-        <div class="tech-item"><span class="tech-label">Classificador</span>TF-IDF + LinearSVC</div>
-        <div class="tech-item"><span class="tech-label">Voz</span>Whisper (OpenAI local)</div>
-        <div class="tech-item"><span class="tech-label">Backend</span>FastAPI + Python</div>
-        <div class="tech-item"><span class="tech-label">Gráficos</span>react-native-svg</div>
-        <div class="tech-item"><span class="tech-label">Linguagem</span>TypeScript</div>
-      </div>
-    </section>
-
-  </main>
-
-  <footer>
-    <div class="container">
-      <p>
-        <a href="https://github.com/jeffev/gasto" target="_blank" rel="noopener">jeffev/gasto</a>
-        · Open Source · MIT License
-      </p>
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span class="footer-logo">💸 Gasto</span>
+      <span>Feito com React Native · <a href="https://github.com/jeffev/gasto" target="_blank" rel="noopener">jeffev/gasto</a> · MIT License</span>
     </div>
   </footer>
 
