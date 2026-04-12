@@ -1,6 +1,6 @@
 // NÃO importar whisper.rn no topo — é um módulo nativo que trava no Expo Go.
 // O import é feito de forma lazy dentro das funções, só quando necessário.
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 
 // Modelo tiny (~75 MB) — bom custo-benefício para frases curtas em português
 const MODEL_URL =
