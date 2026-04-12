@@ -3,44 +3,160 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gasto - App de Finanças Pessoais</title>
+  <title>Gasto — App de Finanças Pessoais</title>
+  <meta name="description" content="App Android gratuito para controle de despesas com registro por voz, classificação automática offline e relatórios mensais.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="page">
-    <header>
+
+  <header class="hero">
+    <div class="container">
+      <div class="hero-badge">Android · Gratuito · Open Source</div>
       <h1>Gasto</h1>
-      <p>App Android de finanças pessoais com entrada por voz e texto, classificação automática offline e relatórios mensais.</p>
-    </header>
+      <p class="hero-sub">Controle suas finanças por voz ou texto.<br>Classificação automática, sem internet.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="https://github.com/jeffev/gasto/releases/latest/download/gasto.apk">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Baixar APK
+        </a>
+        <a class="btn btn-outline" href="https://github.com/jeffev/gasto" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          Ver no GitHub
+        </a>
+      </div>
+    </div>
+  </header>
 
-    <section class="card">
-      <h2>Sobre</h2>
-      <p>Gasto ajuda você a controlar despesas e receitas de forma rápida, com suporte a:</p>
-      <ul>
-        <li>Registro por voz e por texto</li>
-        <li>Classificação automática de categorias</li>
-        <li>Banco local SQLite</li>
-        <li>Relatórios mensais e metas de economia</li>
-        <li>Modo escuro e importação/exportação</li>
-      </ul>
+  <main class="container">
+
+    <!-- Screenshots -->
+    <section class="section">
+      <h2 class="section-title">Capturas de tela</h2>
+      <div class="screenshots">
+        <div class="screenshot-placeholder">
+          <span>Em breve</span>
+        </div>
+        <div class="screenshot-placeholder">
+          <span>Em breve</span>
+        </div>
+        <div class="screenshot-placeholder">
+          <span>Em breve</span>
+        </div>
+      </div>
     </section>
 
-    <section class="card">
-      <h2>Download do APK</h2>
-      <p>Clique abaixo para baixar a versão Android do app.</p>
-      <a class="button" href="https://github.com/jeffev/gasto/releases/latest/download/gasto.apk" target="_blank" rel="noopener noreferrer">Baixar APK</a>
-      <p class="note">Se ainda não houver APK disponível, crie um release no GitHub e carregue o arquivo <code>gasto.apk</code>.</p>
+    <!-- Features -->
+    <section class="section">
+      <h2 class="section-title">Funcionalidades</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🎙️</div>
+          <h3>Registro por voz</h3>
+          <p>Fala "uber vinte reais" e o app categoriza e extrai o valor automaticamente.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⌨️</div>
+          <h3>Registro por texto</h3>
+          <p>Digite em linguagem natural — mesmo resultado do modo voz, sem complicação.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🤖</div>
+          <h3>Classificação offline</h3>
+          <p>TF-IDF + LinearSVC rodando direto no celular. Sem internet, sem servidor.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Relatórios mensais</h3>
+          <p>Gráfico de pizza, gastos por dia, maiores despesas e saldo do mês.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Orçamento e metas</h3>
+          <p>Defina limites por categoria e acompanhe sua meta de economia mensal.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔄</div>
+          <h3>Despesas recorrentes</h3>
+          <p>Lançamentos que se repetem todo mês automaticamente, sem retrabalho.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💰</div>
+          <h3>Entradas e saídas</h3>
+          <p>Controle de receitas separado dos gastos, com categorias específicas.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📤</div>
+          <h3>Exportar CSV</h3>
+          <p>Compartilhe os dados do mês em planilha para usar onde quiser.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌙</div>
+          <h3>Modo escuro</h3>
+          <p>Segue o tema do sistema automaticamente. Zero configuração necessária.</p>
+        </div>
+      </div>
     </section>
 
-    <section class="card">
-      <h2>Link do repositório</h2>
-      <p>O código está disponível no GitHub:</p>
-      <p><a href="https://github.com/jeffev/gasto" target="_blank" rel="noopener noreferrer">github.com/jeffev/gasto</a></p>
+    <!-- Download / Install -->
+    <section class="section">
+      <div class="card install-card">
+        <h2>Como instalar</h2>
+        <ol class="install-steps">
+          <li>
+            <span class="step-num">1</span>
+            <div>
+              <strong>Baixe o APK</strong>
+              <p>Clique no botão abaixo para baixar a versão mais recente.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <div>
+              <strong>Habilite fontes desconhecidas</strong>
+              <p>No Android, vá em <em>Configurações → Segurança → Instalar apps desconhecidos</em> e permita para o seu gerenciador de arquivos.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <div>
+              <strong>Instale e abra</strong>
+              <p>Abra o arquivo APK baixado e toque em Instalar. Pronto!</p>
+            </div>
+          </li>
+        </ol>
+        <a class="btn btn-primary btn-lg" href="https://github.com/jeffev/gasto/releases/latest/download/gasto.apk">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Baixar gasto.apk
+        </a>
+        <p class="req-note">Requer Android 7.0 ou superior</p>
+      </div>
     </section>
 
-    <footer>
-      <p>Site gerado para GitHub Pages. Atualize o release para disponibilizar a APK.</p>
-    </footer>
-  </div>
+    <!-- Tech stack -->
+    <section class="section">
+      <h2 class="section-title">Tecnologias</h2>
+      <div class="tech-grid">
+        <div class="tech-item"><span class="tech-label">App</span>React Native + Expo SDK 54</div>
+        <div class="tech-item"><span class="tech-label">Navegação</span>Expo Router</div>
+        <div class="tech-item"><span class="tech-label">Banco</span>SQLite (expo-sqlite)</div>
+        <div class="tech-item"><span class="tech-label">Classificador</span>TF-IDF + LinearSVC</div>
+        <div class="tech-item"><span class="tech-label">Voz</span>Whisper (OpenAI local)</div>
+        <div class="tech-item"><span class="tech-label">Backend</span>FastAPI + Python</div>
+        <div class="tech-item"><span class="tech-label">Gráficos</span>react-native-svg</div>
+        <div class="tech-item"><span class="tech-label">Linguagem</span>TypeScript</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>
+        <a href="https://github.com/jeffev/gasto" target="_blank" rel="noopener">jeffev/gasto</a>
+        · Open Source · MIT License
+      </p>
+    </div>
+  </footer>
+
 </body>
 </html>
