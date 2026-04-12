@@ -6,6 +6,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Modal,
+  PermissionsAndroid,
   Platform,
   Pressable,
   StyleSheet,
@@ -15,12 +16,7 @@ import {
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  useAudioRecorder,
-  requestRecordingPermissionsAsync,
-  RecordingPresets,
-  setAudioModeAsync,
-} from "expo-audio";
+import Voice, { SpeechResultsEvent, SpeechErrorEvent } from "@react-native-voice/voice";
 
 import {
   listarDespesas,
@@ -29,8 +25,7 @@ import {
   gerarRecorrentesDoMes,
   gerarEntradasRecorrentesDoMes,
 } from "../../lib/db";
-import { parseTexto, transcreverAudio } from "../../lib/api";
-import { WhisperStatus } from "../../lib/whisper";
+import { parseTexto } from "../../lib/api";
 import { Despesa } from "../../lib/types";
 import { useTheme } from "../../lib/theme";
 import ExpenseItem from "../../components/ExpenseItem";
@@ -49,8 +44,7 @@ export default function HomeScreen() {
   const [modoTexto, setModoTexto] = useState(false);
 
   const [gravando, setGravando] = useState(false);
-  const [whisperStatus, setWhisperStatus] = useState<WhisperStatus>({ tipo: "idle" });
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const voiceResultRef = useRef("");
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const flatListRef = useRef<FlatList>(null);
   const hasFocusedBefore = useRef(false);
@@ -62,6 +56,21 @@ export default function HomeScreen() {
       carregarDados(scrollToTop);
     }, [])
   );
+
+  useEffect(() => {
+    Voice.onSpeechResults = (e: SpeechResultsEvent) => {
+      if (e.value?.[0]) voiceResultRef.current = e.value[0];
+    };
+    Voice.onSpeechPartialResults = (e: SpeechResultsEvent) => {
+      if (e.value?.[0]) voiceResultRef.current = e.value[0];
+    };
+    Voice.onSpeechError = (e: SpeechErrorEvent) => {
+      console.warn("Voice error:", e.error);
+    };
+    return () => {
+      Voice.destroy().then(Voice.removeAllListeners);
+    };
+  }, []);
 
   async function carregarDados(scrollToTop = false) {
     const agora = new Date();
@@ -137,17 +146,18 @@ export default function HomeScreen() {
 
   async function iniciarGravacao() {
     try {
-      const { granted } = await requestRecordingPermissionsAsync();
-      if (!granted) {
-        Alert.alert("Permissão necessária", "Ative o microfone nas configurações.");
-        return;
+      if (Platform.OS === "android") {
+        const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO);
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          Alert.alert("Permissão necessária", "Ative o microfone nas configurações.");
+          return;
+        }
       }
-      await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
-      await recorder.prepareToRecordAsync();
-      recorder.record();
+      voiceResultRef.current = "";
+      await Voice.start("pt-BR");
       setGravando(true);
     } catch {
-      Alert.alert("Erro", "Não foi possível iniciar a gravação.");
+      Alert.alert("Erro", "Não foi possível iniciar o reconhecimento de voz.");
     }
   }
 
@@ -157,10 +167,11 @@ export default function HomeScreen() {
     setCarregando(true);
     setModalVisivel(false);
     try {
-      await recorder.stop();
-      const uri = recorder.uri;
-      if (!uri) throw new Error("Arquivo de áudio não encontrado.");
-      const texto = await transcreverAudio(uri, setWhisperStatus);
+      await Voice.stop();
+      // Aguarda resultado final do Google STT
+      await new Promise((r) => setTimeout(r, 600));
+      const texto = voiceResultRef.current.trim();
+      if (!texto) throw new Error("Nenhuma fala detectada. Tente novamente.");
       const resultado = await parseTexto(texto);
       router.push({
         pathname: "/confirm",
@@ -221,12 +232,7 @@ export default function HomeScreen() {
       {carregando && (
         <View style={s.loadingOverlay}>
           <ActivityIndicator size="large" color="#6C63FF" />
-          <Text style={s.loadingText}>{labelWhisper(whisperStatus)}</Text>
-          {whisperStatus.tipo === "baixando" && (
-            <View style={s.progressBarBg}>
-              <View style={[s.progressBarFill, { width: `${whisperStatus.progresso}%` as any }]} />
-            </View>
-          )}
+          <Text style={s.loadingText}>Processando…</Text>
         </View>
       )}
 
@@ -357,15 +363,4 @@ const s = StyleSheet.create({
   sendBtn: { backgroundColor: "#6C63FF", borderRadius: 12, paddingVertical: 14, alignItems: "center" },
   sendBtnDisabled: { backgroundColor: "#C4C2E8" },
   sendBtnText: { color: "#fff", fontSize: 16, fontWeight: "700" },
-  progressBarBg: { marginTop: 16, width: 220, height: 6, backgroundColor: "#E0DEFF", borderRadius: 3, overflow: "hidden" },
-  progressBarFill: { height: 6, backgroundColor: "#6C63FF", borderRadius: 3 },
 });
-
-function labelWhisper(s: WhisperStatus): string {
-  switch (s.tipo) {
-    case "baixando": return `Baixando modelo de voz… ${s.progresso}%`;
-    case "carregando": return "Carregando modelo…";
-    case "transcrevendo": return "Transcrevendo áudio…";
-    default: return "Processando…";
-  }
-}
