@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -15,77 +15,46 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-import { inserirDespesa, buscarOrcamento, totalPorCategoria } from "../lib/db";
-import { Categoria } from "../lib/types";
-import { CATEGORIAS, getCategoria } from "../constants/categories";
+import { atualizarEntrada } from "../lib/db";
+import { CategoriaEntrada } from "../lib/types";
+import { CATEGORIAS_ENTRADA, getCategoriaEntrada } from "../constants/incomeCategories";
 import { useTheme } from "../lib/theme";
 
-export default function ConfirmScreen() {
+export default function EditEntradaScreen() {
   const router = useRouter();
   const t = useTheme();
   const params = useLocalSearchParams<{
-    descricao: string;
-    valor: string;
-    categoria: string;
-    input_original: string;
-    categoria_sugerida: string;
+    id: string; descricao: string; valor: string;
+    categoria: string; data: string; recorrente: string;
   }>();
 
+  const dataInicial = params.data ? new Date(params.data + "T00:00:00") : new Date();
   const [descricao, setDescricao] = useState(params.descricao ?? "");
   const [valorStr, setValorStr] = useState(params.valor ?? "");
-  const [categoria, setCategoria] = useState<Categoria>((params.categoria as Categoria) ?? "Outros");
-  const [recorrente, setRecorrente] = useState(false);
-  const [data, setData] = useState(new Date());
+  const [categoria, setCategoria] = useState<CategoriaEntrada>((params.categoria as CategoriaEntrada) ?? "Salário");
+  const [recorrente, setRecorrente] = useState(params.recorrente === "1");
+  const [data, setData] = useState(dataInicial);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [salvando, setSalvando] = useState(false);
 
-  const valorRef = useRef<TextInput>(null);
-  const valorVazio = !params.valor || params.valor === "0" || params.valor === "";
-  const config = getCategoria(categoria);
+  const config = getCategoriaEntrada(categoria);
   const dataFormatada = data.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
 
-  async function confirmar() {
-    const valor = parseFloat(valorStr.replace(",", "."));
-    if (!descricao.trim()) { Alert.alert("Atenção", "Informe a descrição da despesa."); return; }
-    if (isNaN(valor) || valor <= 0) { Alert.alert("Atenção", "Informe um valor válido."); return; }
+  function isToday(d: Date) { return d.toDateString() === new Date().toDateString(); }
+  function isYesterday(d: Date) { const o = new Date(); o.setDate(o.getDate() - 1); return d.toDateString() === o.toDateString(); }
 
+  async function salvar() {
+    const valor = parseFloat(valorStr.replace(",", "."));
+    if (!descricao.trim()) { Alert.alert("Atenção", "Informe a descrição."); return; }
+    if (isNaN(valor) || valor <= 0) { Alert.alert("Atenção", "Informe um valor válido."); return; }
     setSalvando(true);
     try {
-      const dataStr = data.toISOString().split("T")[0];
-      await inserirDespesa({
-        descricao: descricao.trim(),
-        valor,
-        categoria,
-        data: dataStr,
-        input_original: params.input_original ?? descricao,
-        recorrente: recorrente ? 1 : 0,
-      });
+      await atualizarEntrada({ id: Number(params.id), descricao: descricao.trim(), valor, categoria, data: data.toISOString().split("T")[0], recorrente: recorrente ? 1 : 0 });
+      router.back();
     } catch {
-      Alert.alert("Erro", "Não foi possível salvar a despesa.");
+      Alert.alert("Erro", "Não foi possível salvar as alterações.");
+    } finally {
       setSalvando(false);
-      return;
-    }
-
-    setSalvando(false);
-    router.back();
-
-    try {
-      const orcamento = await buscarOrcamento(categoria);
-      if (orcamento) {
-        const agora = new Date();
-        const totais = await totalPorCategoria(agora.getFullYear(), agora.getMonth() + 1);
-        const totalCat = totais.find(t => t.categoria === categoria)?.total ?? 0;
-        const pct = Math.round((totalCat / orcamento.limite) * 100);
-        if (totalCat > orcamento.limite) {
-          Alert.alert("🚨 Orçamento ultrapassado",
-            `${categoria}: R$ ${totalCat.toFixed(2)} de R$ ${orcamento.limite.toFixed(2)} (${pct}%)`);
-        } else if (totalCat >= orcamento.limite * 0.8) {
-          Alert.alert("⚠️ Atenção com o orçamento",
-            `Você já usou ${pct}% do orçamento de ${categoria}.\nLimite: R$ ${orcamento.limite.toFixed(2)}`);
-        }
-      }
-    } catch {
-      // silently ignore budget check errors
     }
   }
 
@@ -95,7 +64,7 @@ export default function ConfirmScreen() {
         <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled">
 
           <View style={[s.handle, { backgroundColor: t.handle }]} />
-          <Text style={[s.titulo, { color: t.text }]}>Confirmar despesa</Text>
+          <Text style={[s.titulo, { color: t.text }]}>Editar entrada</Text>
 
           <View style={[s.categoriaCard, { backgroundColor: config.corFundo, borderColor: config.cor }]}>
             <Text style={s.categoriaIcon}>{config.icon}</Text>
@@ -103,28 +72,14 @@ export default function ConfirmScreen() {
           </View>
 
           <Text style={[s.label, { color: t.textSub }]}>Descrição</Text>
-          <TextInput
-            style={[s.input, { backgroundColor: t.inputBg, borderColor: t.border, color: t.text }]}
-            value={descricao}
-            onChangeText={setDescricao}
-            placeholder="Ex: Lanche no trabalho"
-            placeholderTextColor={t.textMuted}
-            autoCapitalize="sentences"
-            returnKeyType="next"
-            onSubmitEditing={() => valorRef.current?.focus()}
-          />
+          <TextInput style={[s.input, { backgroundColor: t.inputBg, borderColor: t.border, color: t.text }]}
+            value={descricao} onChangeText={setDescricao}
+            placeholder="Ex: Salário março" placeholderTextColor={t.textMuted} autoCapitalize="sentences" />
 
           <Text style={[s.label, { color: t.textSub }]}>Valor (R$)</Text>
-          <TextInput
-            ref={valorRef}
-            style={[s.input, { backgroundColor: t.inputBg, borderColor: t.border, color: t.text }]}
-            value={valorStr}
-            onChangeText={setValorStr}
-            placeholder="0,00"
-            placeholderTextColor={t.textMuted}
-            keyboardType="decimal-pad"
-            autoFocus={valorVazio}
-          />
+          <TextInput style={[s.input, { backgroundColor: t.inputBg, borderColor: t.border, color: t.text }]}
+            value={valorStr} onChangeText={setValorStr}
+            placeholder="0,00" placeholderTextColor={t.textMuted} keyboardType="decimal-pad" />
 
           <Text style={[s.label, { color: t.textSub }]}>Data</Text>
           <Pressable style={[s.dateBtn, { borderColor: t.border }]} onPress={() => setShowDatePicker(true)}>
@@ -147,14 +102,14 @@ export default function ConfirmScreen() {
 
           <Text style={[s.label, { color: t.textSub }]}>Categoria</Text>
           <View style={s.categoriaGrid}>
-            {CATEGORIAS.map((cat) => {
-              const selecionada = cat.label === categoria;
+            {CATEGORIAS_ENTRADA.map((cat) => {
+              const sel = cat.label === categoria;
               return (
                 <Pressable key={cat.label}
-                  style={[s.catChip, { borderColor: cat.cor, backgroundColor: selecionada ? cat.cor : t.surface }]}
+                  style={[s.catChip, { borderColor: cat.cor, backgroundColor: sel ? cat.cor : t.surface }]}
                   onPress={() => setCategoria(cat.label)}>
                   <Text style={s.catChipIcon}>{cat.icon}</Text>
-                  <Text style={[s.catChipLabel, { color: selecionada ? "#fff" : t.textSub }]}>{cat.label}</Text>
+                  <Text style={[s.catChipLabel, { color: sel ? "#fff" : t.textSub }]}>{cat.label}</Text>
                 </Pressable>
               );
             })}
@@ -162,20 +117,20 @@ export default function ConfirmScreen() {
 
           <View style={[s.recorrenteRow, { backgroundColor: t.surfaceAlt }]}>
             <View>
-              <Text style={[s.recorrenteLabel, { color: t.text }]}>Despesa recorrente</Text>
+              <Text style={[s.recorrenteLabel, { color: t.text }]}>Entrada recorrente</Text>
               <Text style={[s.recorrenteSub, { color: t.textMuted }]}>Repete todo mês automaticamente</Text>
             </View>
             <Switch value={recorrente} onValueChange={setRecorrente}
-              trackColor={{ false: t.border, true: "#C4C2E8" }}
-              thumbColor={recorrente ? "#6C63FF" : "#fff"} />
+              trackColor={{ false: t.border, true: "#A8E6CF" }}
+              thumbColor={recorrente ? "#2ECC71" : "#fff"} />
           </View>
 
           <View style={s.botoes}>
             <Pressable style={[s.btnCancelar, { borderColor: t.border }]} onPress={() => router.back()}>
               <Text style={[s.btnCancelarText, { color: t.textSub }]}>Cancelar</Text>
             </Pressable>
-            <Pressable style={[s.btnConfirmar, salvando && s.btnConfirmarDisabled]} onPress={confirmar} disabled={salvando}>
-              <Text style={s.btnConfirmarText}>{salvando ? "Salvando..." : "✓  Confirmar"}</Text>
+            <Pressable style={[s.btnSalvar, salvando && s.btnSalvarDisabled]} onPress={salvar} disabled={salvando}>
+              <Text style={s.btnSalvarText}>{salvando ? "Salvando..." : "✓  Salvar"}</Text>
             </Pressable>
           </View>
 
@@ -184,9 +139,6 @@ export default function ConfirmScreen() {
     </SafeAreaView>
   );
 }
-
-function isToday(d: Date) { return d.toDateString() === new Date().toDateString(); }
-function isYesterday(d: Date) { const o = new Date(); o.setDate(o.getDate() - 1); return d.toDateString() === o.toDateString(); }
 
 const s = StyleSheet.create({
   safeArea: { flex: 1 },
@@ -203,7 +155,7 @@ const s = StyleSheet.create({
   dateBtnText: { fontSize: 15, fontWeight: "500", flex: 1 },
   dateShortcuts: { flexDirection: "row", gap: 6 },
   shortcut: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, borderWidth: 1 },
-  shortcutAtivo: { backgroundColor: "#6C63FF", borderColor: "#6C63FF" },
+  shortcutAtivo: { backgroundColor: "#2ECC71", borderColor: "#2ECC71" },
   shortcutText: { fontSize: 12, fontWeight: "600" },
   shortcutTextoAtivo: { color: "#fff" },
   categoriaGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 20 },
@@ -216,7 +168,7 @@ const s = StyleSheet.create({
   botoes: { flexDirection: "row", gap: 12 },
   btnCancelar: { flex: 1, paddingVertical: 16, borderRadius: 14, borderWidth: 1.5, alignItems: "center" },
   btnCancelarText: { fontSize: 16, fontWeight: "600" },
-  btnConfirmar: { flex: 2, paddingVertical: 16, borderRadius: 14, backgroundColor: "#6C63FF", alignItems: "center", shadowColor: "#6C63FF", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
-  btnConfirmarDisabled: { backgroundColor: "#C4C2E8" },
-  btnConfirmarText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  btnSalvar: { flex: 2, paddingVertical: 16, borderRadius: 14, backgroundColor: "#2ECC71", alignItems: "center", shadowColor: "#2ECC71", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
+  btnSalvarDisabled: { backgroundColor: "#A8E6CF" },
+  btnSalvarText: { color: "#fff", fontSize: 16, fontWeight: "700" },
 });

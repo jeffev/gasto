@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useRouter } from "expo-router";
 import { Swipeable } from "react-native-gesture-handler";
@@ -41,12 +42,33 @@ function EntradaItem({ entrada, onDelete }: { entrada: Entrada; onDelete: () => 
     ]);
   }
 
+  function handleEditar() {
+    swipeRef.current?.close();
+    router.push({
+      pathname: "/edit-entrada",
+      params: {
+        id: String(entrada.id),
+        descricao: entrada.descricao,
+        valor: String(entrada.valor),
+        categoria: entrada.categoria,
+        data: entrada.data,
+        recorrente: String(entrada.recorrente ?? 0),
+      },
+    });
+  }
+
   function renderAcaoDireita() {
     return (
-      <Pressable style={s.swipeBtnExcluir} onPress={handleExcluir}>
-        <Text style={s.swipeIcon}>🗑️</Text>
-        <Text style={s.swipeLabel}>Excluir</Text>
-      </Pressable>
+      <View style={s.swipeActions}>
+        <Pressable style={s.swipeBtnEditar} onPress={handleEditar}>
+          <Text style={s.swipeIcon}>✏️</Text>
+          <Text style={s.swipeLabel}>Editar</Text>
+        </Pressable>
+        <Pressable style={s.swipeBtnExcluir} onPress={handleExcluir}>
+          <Text style={s.swipeIcon}>🗑️</Text>
+          <Text style={s.swipeLabel}>Excluir</Text>
+        </Pressable>
+      </View>
     );
   }
 
@@ -157,7 +179,9 @@ const s = StyleSheet.create({
   catBadgeText: { fontSize: 11, fontWeight: "600" },
   data: { fontSize: 12 },
   valor: { fontSize: 15, fontWeight: "700", color: "#2ECC71" },
-  swipeBtnExcluir: { backgroundColor: "#FF4757", justifyContent: "center", alignItems: "center", width: 72, borderRadius: 16 },
+  swipeActions: { flexDirection: "row" },
+  swipeBtnEditar: { backgroundColor: "#2ECC71", justifyContent: "center", alignItems: "center", width: 72, borderTopLeftRadius: 16, borderBottomLeftRadius: 16 },
+  swipeBtnExcluir: { backgroundColor: "#FF4757", justifyContent: "center", alignItems: "center", width: 72, borderTopRightRadius: 16, borderBottomRightRadius: 16 },
   swipeIcon: { fontSize: 20 },
   swipeLabel: { fontSize: 11, color: "#fff", fontWeight: "600", marginTop: 2 },
   fab: { position: "absolute", bottom: 32, right: 24, width: 60, height: 60, borderRadius: 30, backgroundColor: "#2ECC71", justifyContent: "center", alignItems: "center", shadowColor: "#2ECC71", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 8 },

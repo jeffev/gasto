@@ -11,15 +11,16 @@ import { Swipeable } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
 import { Despesa } from "../lib/types";
 import { getCategoria } from "../constants/categories";
-import { deletarDespesa } from "../lib/db";
+import { deletarDespesa, marcarDespesaPaga } from "../lib/db";
 import { useTheme } from "../lib/theme";
 
 interface Props {
   despesa: Despesa;
   onDelete: () => void;
+  onUpdate?: () => void;
 }
 
-export default function ExpenseItem({ despesa, onDelete }: Props) {
+export default function ExpenseItem({ despesa, onDelete, onUpdate }: Props) {
   const router = useRouter();
   const t = useTheme();
   const config = getCategoria(despesa.categoria);
@@ -42,6 +43,12 @@ export default function ExpenseItem({ despesa, onDelete }: Props) {
         recorrente: String(despesa.recorrente ?? 0),
       },
     });
+  }
+
+  async function handleTogglePago() {
+    const novoPago = despesa.pago === 1 ? 0 : 1;
+    await marcarDespesaPaga(despesa.id, novoPago);
+    onUpdate?.();
   }
 
   function handleExcluir() {
@@ -77,14 +84,18 @@ export default function ExpenseItem({ despesa, onDelete }: Props) {
   return (
     <Animated.View style={{ opacity: fadeAnim, marginBottom: 10 }}>
       <Swipeable ref={swipeRef} renderRightActions={renderAcaoDireita} friction={2} overshootRight={false}>
-        <View style={[s.card, { backgroundColor: t.surface }]}>
+        <View style={[s.card, { backgroundColor: t.surface }, despesa.recorrente === 1 && despesa.pago === 1 && s.cardPago]}>
           <View style={[s.iconContainer, { backgroundColor: config.corFundo }]}>
             <Text style={s.icon}>{config.icon}</Text>
           </View>
           <View style={s.info}>
             <View style={s.topRow}>
-              <Text style={[s.descricao, { color: t.text }]} numberOfLines={1}>{despesa.descricao}</Text>
-              {despesa.recorrente === 1 && <Text style={s.recorrenteTag}>🔁</Text>}
+              <Text style={[s.descricao, { color: t.text }, despesa.pago === 1 && s.descricaoPaga]} numberOfLines={1}>{despesa.descricao}</Text>
+              {despesa.recorrente === 1 && (
+                <Pressable onPress={handleTogglePago} hitSlop={8}>
+                  <Text style={s.recorrenteTag}>{despesa.pago === 1 ? "✅" : "🔁"}</Text>
+                </Pressable>
+              )}
             </View>
             <View style={s.metaRow}>
               <View style={[s.catBadge, { backgroundColor: config.corFundo }]}>
@@ -109,7 +120,9 @@ const s = StyleSheet.create({
   info: { flex: 1 },
   topRow: { flexDirection: "row", alignItems: "center", gap: 4, marginBottom: 4 },
   descricao: { fontSize: 15, fontWeight: "600", flex: 1 },
-  recorrenteTag: { fontSize: 12 },
+  descricaoPaga: { textDecorationLine: "line-through", opacity: 0.5 },
+  cardPago: { opacity: 0.7 },
+  recorrenteTag: { fontSize: 14 },
   metaRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   catBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 },
   catBadgeText: { fontSize: 11, fontWeight: "600" },

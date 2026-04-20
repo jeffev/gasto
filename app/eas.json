@@ -8,6 +8,12 @@
         "workflow": "managed",
         "buildType": "apk"
       }
+    },
+    "production": {
+      "android": {
+        "workflow": "managed",
+        "buildType": "app-bundle"
+      }
     }
   }
 }

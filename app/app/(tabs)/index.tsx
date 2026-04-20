@@ -22,6 +22,7 @@ import {
 
 import {
   listarDespesas,
+  buscarDespesas,
   totalDoMes,
   totalEntradasDoMes,
   gerarRecorrentesDoMes,
@@ -30,16 +31,20 @@ import {
 import { parseTexto } from "../../lib/api";
 import { Despesa } from "../../lib/types";
 import { useTheme } from "../../lib/theme";
+import { useAppConfig } from "../../lib/AppConfigContext";
 import ExpenseItem from "../../components/ExpenseItem";
 
 export default function HomeScreen() {
   const router = useRouter();
   const t = useTheme();
+  const { fmt } = useAppConfig();
 
   const [despesas, setDespesas] = useState<Despesa[]>([]);
   const [totalMes, setTotalMes] = useState(0);
   const [totalEntradas, setTotalEntradas] = useState(0);
   const [carregando, setCarregando] = useState(false);
+  const [busca, setBusca] = useState("");
+  const [buscando, setBuscando] = useState(false);
 
   const [modalVisivel, setModalVisivel] = useState(false);
   const [textoInput, setTextoInput] = useState("");
@@ -58,6 +63,15 @@ export default function HomeScreen() {
       carregarDados(scrollToTop);
     }, [])
   );
+
+  async function executarBusca(texto: string) {
+    setBusca(texto);
+    if (!texto.trim()) { await carregarDados(false); return; }
+    setBuscando(true);
+    const resultado = await buscarDespesas(texto.trim());
+    setDespesas(resultado);
+    setBuscando(false);
+  }
 
   useSpeechRecognitionEvent("result", (e) => {
     const transcript = e.results[0]?.transcript ?? "";
@@ -193,26 +207,42 @@ export default function HomeScreen() {
     <SafeAreaView style={[s.safeArea, { backgroundColor: t.bg }]}>
       {/* Cabeçalho */}
       <View style={s.header}>
-        <Text style={s.headerSub}>gastô · gastos em</Text>
+        <View style={s.headerTop}>
+          <Text style={s.headerSub}>gastô · gastos em</Text>
+          <Pressable onPress={() => router.push("/next-month")} style={s.proxMesBtn}>
+            <Text style={s.proxMesBtnText}>🔁 Próximo mês</Text>
+          </Pressable>
+        </View>
         <Text style={s.headerMes}>{mesCapitalizado}</Text>
-        <Text style={s.headerTotal}>
-          {totalMes.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-        </Text>
+        <Text style={s.headerTotal}>{fmt(totalMes)}</Text>
         {totalEntradas > 0 && (
           <View style={s.saldoRow}>
             <Text style={s.saldoLabel}>Saldo do mês</Text>
             <Text style={[s.saldoValor, saldoPositivo ? s.saldoPos : s.saldoNeg]}>
-              {saldo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              {fmt(saldo)}
             </Text>
           </View>
         )}
+      </View>
+
+      {/* Barra de busca */}
+      <View style={[s.buscaContainer, { backgroundColor: t.surface, borderBottomColor: t.divider }]}>
+        <TextInput
+          style={[s.buscaInput, { color: t.text, backgroundColor: t.inputBg, borderColor: t.border }]}
+          placeholder="🔍  Buscar despesas..."
+          placeholderTextColor={t.textMuted}
+          value={busca}
+          onChangeText={executarBusca}
+          returnKeyType="search"
+          clearButtonMode="while-editing"
+        />
       </View>
 
       <FlatList
         ref={flatListRef}
         data={despesas}
         keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => <ExpenseItem despesa={item} onDelete={() => carregarDados(false)} />}
+        renderItem={({ item }) => <ExpenseItem despesa={item} onDelete={() => carregarDados(false)} onUpdate={() => carregarDados(false)} />}
         contentContainerStyle={despesas.length === 0 ? s.listaVazia : s.lista}
         ListEmptyComponent={
           <View style={s.emptyContainer}>
@@ -318,7 +348,12 @@ export default function HomeScreen() {
 const s = StyleSheet.create({
   safeArea: { flex: 1 },
   header: { backgroundColor: "#6C63FF", paddingTop: 16, paddingBottom: 28, paddingHorizontal: 24, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
+  headerTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 2 },
+  proxMesBtn: { backgroundColor: "rgba(255,255,255,0.2)", paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20 },
+  proxMesBtnText: { color: "#fff", fontSize: 12, fontWeight: "600" },
   headerSub: { color: "rgba(255,255,255,0.75)", fontSize: 13 },
+  buscaContainer: { paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1 },
+  buscaInput: { borderWidth: 1.5, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, fontSize: 15 },
   headerMes: { color: "#fff", fontSize: 20, fontWeight: "700", marginTop: 2 },
   headerTotal: { color: "#fff", fontSize: 36, fontWeight: "800", marginTop: 8 },
   saldoRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: "rgba(255,255,255,0.15)", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, marginTop: 12 },

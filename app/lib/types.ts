@@ -17,6 +17,7 @@ export interface Despesa {
   data: string; // ISO date string YYYY-MM-DD
   input_original: string;
   recorrente: number; // 0 ou 1
+  pago: number; // 0 ou 1 (relevante para recorrentes)
   criado_em: string;
 }
 

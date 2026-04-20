@@ -74,9 +74,9 @@ export default function TermosScreen() {
           O aplicativo não possui conta de usuário, login ou qualquer forma de identificação pessoal.
         </Secao>
 
-        <Secao titulo="3. Transcrição de voz">
-          Quando você usa a função de gravação de voz, o áudio é enviado para um servidor local na sua rede (configurado por você) para processamento pelo modelo Whisper. O áudio não é enviado para servidores de terceiros e é descartado imediatamente após a transcrição.{"\n\n"}
-          Caso prefira não usar a gravação de voz, o aplicativo funciona completamente via digitação de texto, sem nenhuma comunicação de rede.
+        <Secao titulo="3. Reconhecimento de voz">
+          Quando você usa a função de gravação de voz, o áudio é processado pelo serviço de reconhecimento de fala do Google (Google Speech Recognition), disponível nativamente no Android. O processamento ocorre no próprio dispositivo ou via API do sistema operacional, sem envio de dados para servidores do desenvolvedor do aplicativo.{"\n\n"}
+          Caso prefira não usar a gravação de voz, o aplicativo funciona completamente via digitação de texto.
         </Secao>
 
         <Secao titulo="4. Privacidade">

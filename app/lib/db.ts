@@ -56,12 +56,8 @@ async function migrate(db: SQLite.SQLiteDatabase) {
     );
   `);
 
-  // Migração: adicionar coluna recorrente se não existir (para DBs antigos)
-  try {
-    await db.execAsync(`ALTER TABLE despesas ADD COLUMN recorrente INTEGER DEFAULT 0`);
-  } catch {
-    // coluna já existe, ignorar
-  }
+  try { await db.execAsync(`ALTER TABLE despesas ADD COLUMN recorrente INTEGER DEFAULT 0`); } catch {}
+  try { await db.execAsync(`ALTER TABLE despesas ADD COLUMN pago INTEGER DEFAULT 0`); } catch {}
 }
 
 // ---------------------------------------------------------------------------
@@ -135,6 +131,19 @@ export async function totalPorCategoria(
      ORDER BY total DESC`,
     `${prefixo}%`
   );
+}
+
+export async function buscarDespesas(query: string): Promise<Despesa[]> {
+  const db = await getDb();
+  return db.getAllAsync<Despesa>(
+    `SELECT * FROM despesas WHERE descricao LIKE ? OR categoria LIKE ? ORDER BY data DESC, criado_em DESC LIMIT 100`,
+    `%${query}%`, `%${query}%`
+  );
+}
+
+export async function marcarDespesaPaga(id: number, pago: number): Promise<void> {
+  const db = await getDb();
+  await db.runAsync(`UPDATE despesas SET pago = ? WHERE id = ?`, pago, id);
 }
 
 // ---------------------------------------------------------------------------
@@ -353,6 +362,19 @@ export async function salvarMeta(valor: number): Promise<void> {
      ON CONFLICT(id) DO UPDATE SET valor = excluded.valor`,
     valor
   );
+}
+
+export async function listarRecorrentesParaProximoMes(): Promise<{ despesas: Despesa[]; entradas: Entrada[] }> {
+  const db = await getDb();
+  const agora = new Date();
+  const ano = agora.getFullYear();
+  const mes = agora.getMonth() + 1;
+  const prefixo = `${ano}-${String(mes).padStart(2, "0")}`;
+  const [despesas, entradas] = await Promise.all([
+    db.getAllAsync<Despesa>(`SELECT * FROM despesas WHERE recorrente = 1 AND data LIKE ? ORDER BY categoria`, `${prefixo}%`),
+    db.getAllAsync<Entrada>(`SELECT * FROM entradas WHERE recorrente = 1 AND data LIKE ? ORDER BY categoria`, `${prefixo}%`),
+  ]);
+  return { despesas, entradas };
 }
 
 export async function gerarEntradasRecorrentesDoMes(ano: number, mes: number): Promise<number> {
