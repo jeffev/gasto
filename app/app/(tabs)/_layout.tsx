@@ -50,6 +50,22 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="news"
+        options={{
+          title: "Mercado",
+          tabBarIcon: ({ focused }) => <TabIcon emoji="📰" focused={focused} />,
+          tabBarActiveTintColor: "#0288D1",
+        }}
+      />
+      <Tabs.Screen
+        name="learn"
+        options={{
+          title: "Aprender",
+          tabBarIcon: ({ focused }) => <TabIcon emoji="🎓" focused={focused} />,
+          tabBarActiveTintColor: "#6C63FF",
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: "Config.",

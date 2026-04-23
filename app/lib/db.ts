@@ -58,6 +58,14 @@ async function migrate(db: SQLite.SQLiteDatabase) {
 
   try { await db.execAsync(`ALTER TABLE despesas ADD COLUMN recorrente INTEGER DEFAULT 0`); } catch {}
   try { await db.execAsync(`ALTER TABLE despesas ADD COLUMN pago INTEGER DEFAULT 0`); } catch {}
+
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS aprendizado (
+      id          TEXT PRIMARY KEY,
+      concluido   INTEGER DEFAULT 0,
+      concluido_em TEXT
+    );
+  `);
 }
 
 // ---------------------------------------------------------------------------
@@ -375,6 +383,27 @@ export async function listarRecorrentesParaProximoMes(): Promise<{ despesas: Des
     db.getAllAsync<Entrada>(`SELECT * FROM entradas WHERE recorrente = 1 AND data LIKE ? ORDER BY categoria`, `${prefixo}%`),
   ]);
   return { despesas, entradas };
+}
+
+// ---------------------------------------------------------------------------
+// Aprendizado
+// ---------------------------------------------------------------------------
+
+export async function marcarPilulaLida(id: string): Promise<void> {
+  const db = await getDb();
+  await db.runAsync(
+    `INSERT INTO aprendizado (id, concluido, concluido_em) VALUES (?, 1, datetime('now','localtime'))
+     ON CONFLICT(id) DO UPDATE SET concluido = 1, concluido_em = excluded.concluido_em`,
+    id
+  );
+}
+
+export async function listarPilulasLidas(): Promise<Set<string>> {
+  const db = await getDb();
+  const rows = await db.getAllAsync<{ id: string }>(
+    `SELECT id FROM aprendizado WHERE concluido = 1`
+  );
+  return new Set(rows.map((r) => r.id));
 }
 
 export async function gerarEntradasRecorrentesDoMes(ano: number, mes: number): Promise<number> {

@@ -1,0 +1,298 @@
+{
+  "versao": "1.0",
+  "atualizado": "2026-04-23",
+  "trilhas": [
+    {
+      "id": "dividas",
+      "titulo": "Quero sair das dívidas",
+      "emoji": "💸",
+      "cor": "#FF4757",
+      "nivel": "iniciante",
+      "descricao": "Entenda como as dívidas funcionam e crie um plano para se livrar delas de vez.",
+      "pilulas": [
+        {
+          "id": "dividas-1",
+          "titulo": "O inimigo invisível: juros compostos",
+          "emoji": "📈",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "Juros compostos são chamados de 'a oitava maravilha do mundo' — mas quando estão do lado do banco, não do seu. Uma dívida de R$ 1.000 no cartão de crédito, com juros de 15% ao mês (média brasileira), vira R$ 5.350 em apenas 12 meses se você pagar só o mínimo.",
+            "O problema é que os juros incidem sobre os juros anteriores. No segundo mês, você paga 15% sobre R$ 1.150. No terceiro, sobre R$ 1.322. A bola de neve cresce sozinha e sem pressa.",
+            "A lição é simples: nunca pague só o mínimo de dívidas rotativas. Cartão de crédito e cheque especial têm os juros mais altos do mercado. Quite o total sempre que possível, ou ao menos o máximo que conseguir."
+          ],
+          "dica_app": "Crie um orçamento para a categoria 'Outros' ou crie uma meta de economia no Gastô para acompanhar quanto você está destinando ao pagamento de dívidas mensalmente.",
+          "link_externo": ""
+        },
+        {
+          "id": "dividas-2",
+          "titulo": "Avalanche ou bola de neve: qual usar?",
+          "emoji": "🎯",
+          "nivel": "iniciante",
+          "tempo": "4 min",
+          "conteudo": [
+            "Existem duas estratégias famosas para quitar dívidas. O método avalanche paga primeiro a dívida com maior taxa de juros, independente do valor. Matematicamente, você paga menos no total e termina mais rápido.",
+            "O método bola de neve paga a menor dívida primeiro, independente dos juros. A lógica é psicológica: quitar uma dívida rapidamente gera motivação para continuar.",
+            "Na prática, a combinação costuma funcionar melhor: quite as pequenas para 'limpar o campo' e ganhar fôlego, depois concentre tudo na de maior juro. O importante é ter um sistema e seguir."
+          ],
+          "dica_app": "Use o relatório mensal do Gastô para visualizar quais categorias consomem mais. Isso ajuda a decidir onde cortar gastos para pagar mais rápido.",
+          "link_externo": ""
+        },
+        {
+          "id": "dividas-3",
+          "titulo": "Onde cortar para pagar mais rápido",
+          "emoji": "✂️",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "Para acelerar a quitação das dívidas você precisa de dinheiro sobrando. A questão não é quanto você ganha, mas quanto consegue direcionar para pagamentos além do mínimo.",
+            "Comece pelos gastos variáveis: alimentação fora de casa, assinaturas que não usa, compras por impulso. Cortes de R$ 200 a R$ 300 por mês podem acelerar a quitação em vários meses.",
+            "Evite o erro de cortar tudo de uma vez e desistir por não aguentar. Corte gradualmente e substitua: em vez de restaurante todos os dias, vá uma vez por semana. Escolha uma assinatura de streaming e cancele as outras."
+          ],
+          "dica_app": "Veja no relatório do Gastô quais categorias consomem mais. Assinaturas e Lazer costumam ter gordura para cortar sem afetar muito a qualidade de vida.",
+          "link_externo": ""
+        },
+        {
+          "id": "dividas-4",
+          "titulo": "Como negociar suas dívidas",
+          "emoji": "🤝",
+          "nivel": "iniciante",
+          "tempo": "4 min",
+          "conteudo": [
+            "Bancos e credores preferem receber menos do que não receber nada. Isso significa que negociar é sempre possível — e muitas vezes você consegue descontos de 30% a 70% no valor total.",
+            "O Serasa Limpa Nome e os sites oficiais dos bancos têm portais de renegociação. Antes de acessar, calcule o máximo que você pode pagar à vista ou mensalmente sem comprometer necessidades básicas. Tenha esse número claro.",
+            "Na negociação, pergunte sempre: qual o desconto para pagamento à vista? Qual a menor parcela? Posso pagar em boleto? Evite renegociar em mais parcelas do que o necessário — os juros voltam."
+          ],
+          "dica_app": "Após negociar, registre o novo valor e a data de quitação como despesa recorrente no Gastô para não esquecer nenhum pagamento.",
+          "link_externo": ""
+        },
+        {
+          "id": "dividas-5",
+          "titulo": "Fundo de emergência: nunca mais entrar em dívidas",
+          "emoji": "🛡️",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "A maioria das dívidas começa numa emergência: o carro quebrou, ficou doente, perdeu o emprego. Sem reserva, o cartão vira o único caminho. Com reserva, é só sacar.",
+            "O fundo de emergência ideal é de 3 a 6 meses dos seus gastos mensais. Se você gasta R$ 3.000 por mês, a meta é ter R$ 9.000 a R$ 18.000 guardados em local de fácil acesso.",
+            "O melhor lugar para o fundo de emergência é o Tesouro Selic ou um CDB de liquidez diária. Rende mais que a poupança, está disponível a qualquer momento e é protegido pelo FGC até R$ 250.000."
+          ],
+          "dica_app": "Use a meta de economia do Gastô para acompanhar quanto já guardou para sua reserva. Defina a meta como 6x os seus gastos mensais médios do último relatório.",
+          "link_externo": ""
+        }
+      ]
+    },
+    {
+      "id": "render",
+      "titulo": "Quero fazer meu dinheiro render",
+      "emoji": "🌱",
+      "cor": "#2ECC71",
+      "nivel": "iniciante",
+      "descricao": "Saia da poupança e entenda onde colocar seu dinheiro para render de verdade.",
+      "pilulas": [
+        {
+          "id": "render-1",
+          "titulo": "Por que a poupança não é suficiente",
+          "emoji": "🐷",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "A poupança rende 70% da Selic quando a taxa está acima de 8,5% ao ano. Com a Selic em 14%, ela rende cerca de 9,8% — bem abaixo do CDI e do Tesouro Selic, que acompanham 100% da Selic.",
+            "Além disso, a inflação corrói o poder de compra. Se o IPCA está em 10% ao ano e a poupança rende 9,8%, você está perdendo dinheiro em termos reais: o número cresce, mas compra menos.",
+            "A poupança tem apenas um benefício real: é isenta de Imposto de Renda. Mas existem outros investimentos também isentos que rendem muito mais, como LCI e LCA."
+          ],
+          "dica_app": "Veja na aba Mercado do Gastô a taxa atual do CDI. Compare com o rendimento da poupança e calcule a diferença acumulada no simulador.",
+          "link_externo": ""
+        },
+        {
+          "id": "render-2",
+          "titulo": "CDB e Tesouro Selic: mais segurança, mais rendimento",
+          "emoji": "💳",
+          "nivel": "iniciante",
+          "tempo": "4 min",
+          "conteudo": [
+            "O CDB é um empréstimo que você faz ao banco. Em troca, ele paga juros — geralmente 100% do CDI ou mais. É protegido pelo FGC até R$ 250.000 por instituição financeira.",
+            "O Tesouro Selic é um empréstimo ao governo, considerado o investimento mais seguro do Brasil. Rende praticamente 100% da Selic com liquidez diária — você pode sacar qualquer dia útil sem perder rendimento.",
+            "Para reserva de emergência e dinheiro de curto prazo, Tesouro Selic e CDB de liquidez diária são as melhores opções: tão seguros quanto a poupança, rendendo bem mais."
+          ],
+          "dica_app": "No simulador do Gastô, compare CDB 100% CDI com Poupança ao longo de 10 anos para ver a diferença acumulada no seu patrimônio.",
+          "link_externo": ""
+        },
+        {
+          "id": "render-3",
+          "titulo": "LCI e LCA: o segredo isento de IR",
+          "emoji": "🏦",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "LCI (Letra de Crédito Imobiliário) e LCA (Letra de Crédito do Agronegócio) são investimentos de renda fixa isentos de Imposto de Renda para pessoas físicas — o que faz enorme diferença no rendimento líquido.",
+            "Um CDB a 100% do CDI com IR de 15% rende 85% líquido. Uma LCI a 92% do CDI sem IR rende 92% líquido — ou seja, a LCI ganha mesmo pagando taxa menor.",
+            "A desvantagem é a carência mínima de 90 dias. Não servem para reserva de emergência, mas são ótimas para dinheiro que você não precisará no curto prazo."
+          ],
+          "dica_app": "Compare LCI/LCA com CDB no simulador do Gastô para ver qual rende mais no prazo que você tem disponível.",
+          "link_externo": ""
+        },
+        {
+          "id": "render-4",
+          "titulo": "A regra 50-30-20 na prática",
+          "emoji": "📐",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "A regra 50-30-20 é um ponto de partida: 50% da renda para necessidades (moradia, alimentação, saúde), 30% para desejos (lazer, viagens) e 20% para poupança e investimentos.",
+            "Na prática, para quem está começando, qualquer percentual guardado já é um avanço. Se consegue guardar 5%, tente 7% no mês seguinte. O hábito importa mais que o valor inicial.",
+            "O mais importante é automatizar: configure uma transferência automática logo que o salário cair. Dinheiro que você nunca 'vê' na conta corrente dificilmente é gasto."
+          ],
+          "dica_app": "Defina a meta de economia do Gastô como 20% da sua renda e acompanhe no relatório se está conseguindo mês a mês.",
+          "link_externo": ""
+        },
+        {
+          "id": "render-5",
+          "titulo": "Diversificação: não coloque tudo num lugar",
+          "emoji": "🎲",
+          "nivel": "intermediário",
+          "tempo": "4 min",
+          "conteudo": [
+            "Diversificação significa distribuir os investimentos para reduzir o risco. Se você tem tudo num banco e ele passar por dificuldades, o FGC cobre até R$ 250.000. Em dois bancos, a proteção dobra.",
+            "Para iniciantes, uma boa base é: reserva de emergência no Tesouro Selic, parte em LCI/LCA, e uma fatia pequena em renda variável (ETFs de ações) para quem aceita mais risco.",
+            "Com o tempo, você vai aprendendo sobre cada classe de ativo e ajustando a distribuição. Não há fórmula universal — depende do prazo, objetivo e tolerância a risco de cada pessoa."
+          ],
+          "dica_app": "Registre seus aportes mensais como entradas na categoria Investimentos no Gastô para acompanhar o total acumulado ao longo dos meses.",
+          "link_externo": ""
+        }
+      ]
+    },
+    {
+      "id": "exterior",
+      "titulo": "Quero investir no exterior",
+      "emoji": "🌍",
+      "cor": "#0288D1",
+      "nivel": "avançado",
+      "descricao": "Diversifique internacionalmente e proteja seu patrimônio da volatilidade do real.",
+      "pilulas": [
+        {
+          "id": "exterior-1",
+          "titulo": "Por que investir fora do Brasil?",
+          "emoji": "🌐",
+          "nivel": "intermediário",
+          "tempo": "4 min",
+          "conteudo": [
+            "O Brasil representa menos de 2% da economia global. Investir apenas aqui significa deixar 98% das oportunidades de lado — e ficar exposto aos riscos políticos e econômicos de um único país.",
+            "Quando o real se desvaloriza (o que acontece com frequência), ativos em dólar ou euro se valorizam em reais. Ter parte do patrimônio no exterior funciona como proteção natural contra crises locais.",
+            "Não é preciso enviar dinheiro para fora do Brasil. Existem produtos na própria B3 que dão exposição ao mercado americano e global, comprados em reais como qualquer ação."
+          ],
+          "dica_app": "No simulador do Gastô, experimente selecionar USD como moeda e simule quanto seu aporte mensal acumularia em dólares ao longo dos anos.",
+          "link_externo": ""
+        },
+        {
+          "id": "exterior-2",
+          "titulo": "BDRs: ações internacionais pela B3",
+          "emoji": "📊",
+          "nivel": "intermediário",
+          "tempo": "4 min",
+          "conteudo": [
+            "BDR (Brazilian Depositary Receipt) é um certificado negociado na B3 que representa uma ação estrangeira. Você compra AAPL34 (Apple) ou GOGL34 (Google) em reais, sem precisar de conta no exterior.",
+            "A variação do BDR reflete o desempenho da ação original e a variação do dólar. Se a Apple subiu 10% e o dólar 5%, seu BDR valorizou aproximadamente 15% em reais.",
+            "IR: 15% sobre o ganho de capital na venda, igual às ações brasileiras. Dividendos têm IR de 30% retido na fonte pelo emissor."
+          ],
+          "dica_app": "Registre aportes em BDRs como entradas na categoria Investimentos para acompanhar quanto você já investiu no exterior ao longo do tempo.",
+          "link_externo": ""
+        },
+        {
+          "id": "exterior-3",
+          "titulo": "ETFs internacionais: IVVB11 e outros",
+          "emoji": "🗂️",
+          "nivel": "intermediário",
+          "tempo": "4 min",
+          "conteudo": [
+            "ETF (Exchange Traded Fund) é um fundo negociado em bolsa que replica um índice. O IVVB11 replica o S&P 500 — as 500 maiores empresas americanas: Apple, Microsoft, Amazon, Google, Meta e mais.",
+            "Comprando uma cota do ETF, você já tem exposição a centenas de empresas de uma vez. É a forma mais simples e barata de diversificar internacionalmente sem precisar analisar empresa por empresa.",
+            "Outros ETFs na B3: SPXI11 (S&P 500 com proteção cambial), NASD11 (Nasdaq 100, foco em tecnologia), GOLD11 (ouro). Cada um tem perfil diferente de risco e retorno."
+          ],
+          "dica_app": "No simulador do Gastô, compare o rendimento de Ações (~15% histórico) com renda fixa para entender o custo de oportunidade de cada escolha.",
+          "link_externo": ""
+        },
+        {
+          "id": "exterior-4",
+          "titulo": "Risco cambial: amigo ou inimigo?",
+          "emoji": "💱",
+          "nivel": "avançado",
+          "tempo": "4 min",
+          "conteudo": [
+            "Risco cambial é a variação do câmbio entre o real e a moeda do investimento. Se você tem IVVB11 e o dólar sobe, você ganha em reais. Se o dólar cai, parte do rendimento é consumida.",
+            "Historicamente, o real se desvalorizou em média 5% a 7% ao ano contra o dólar nos últimos 30 anos. Isso significa que investimentos em dólar, na média, entregam um bônus extra em reais ao longo do tempo.",
+            "Para quem não quer o risco cambial, existem ETFs com hedge (proteção), como o SPXI11. A proteção tem custo: o fundo usa instrumentos financeiros para neutralizar a variação do câmbio, reduzindo parte do rendimento."
+          ],
+          "dica_app": "Compare no simulador do Gastô o mesmo aporte simulado em BRL e em USD para visualizar o impacto da variação cambial histórica no patrimônio acumulado.",
+          "link_externo": ""
+        }
+      ]
+    },
+    {
+      "id": "fundamentos",
+      "titulo": "Fundamentos do dinheiro",
+      "emoji": "📚",
+      "cor": "#9C27B0",
+      "nivel": "iniciante",
+      "descricao": "Conceitos essenciais que todo adulto deveria saber sobre finanças pessoais.",
+      "pilulas": [
+        {
+          "id": "fund-1",
+          "titulo": "Renda fixa vs renda variável",
+          "emoji": "⚖️",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "Renda fixa é qualquer investimento onde você sabe de antemão qual será o rendimento — seja um percentual fixo (ex: 12% ao ano) ou atrelado a um índice (CDI, IPCA). CDB, Tesouro Direto, LCI e LCA são renda fixa.",
+            "Renda variável é quando o retorno depende do mercado — pode ser muito alto ou negativo. Ações, ETFs e fundos de ações são renda variável. O risco é maior, mas o potencial de retorno no longo prazo também.",
+            "Para iniciantes, a sugestão é ter a maior parte em renda fixa e uma parcela pequena em renda variável. Com o tempo, à medida que você aprende e tolera mais volatilidade, pode ir aumentando gradualmente a parte variável."
+          ],
+          "dica_app": "Use as categorias de entradas do Gastô para separar rendimentos de renda fixa e variável e acompanhar quanto cada parte contribui por mês.",
+          "link_externo": ""
+        },
+        {
+          "id": "fund-2",
+          "titulo": "O que é a Selic e por que ela importa",
+          "emoji": "🏛️",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "A Selic é a taxa básica de juros da economia brasileira, definida pelo Banco Central a cada 45 dias nas reuniões do COPOM. Ela funciona como o 'custo do dinheiro' — quando sobe, crédito, financiamentos e cartão ficam mais caros.",
+            "Para investidores, Selic alta é boa: significa que renda fixa (CDB, Tesouro, LCI) rende mais sem risco. Selic baixa é ruim para renda fixa mas estimula o consumo e pode favorecer a bolsa de valores.",
+            "Acompanhar a Selic ajuda a entender o momento econômico e a decidir onde alocar. Com Selic alta, renda fixa é muito atraente. Com Selic baixa, vale olhar mais para renda variável."
+          ],
+          "dica_app": "A aba Mercado do Gastô mostra a Selic e o CDI atualizados via Banco Central. Consulte antes de comparar investimentos no simulador.",
+          "link_externo": ""
+        },
+        {
+          "id": "fund-3",
+          "titulo": "IPCA: o que é a inflação real",
+          "emoji": "📉",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "O IPCA mede a inflação oficial do Brasil — quanto uma cesta de produtos e serviços (alimentação, moradia, transporte, saúde) ficou mais cara no período.",
+            "Se o IPCA foi 0,8% num mês e seu investimento rendeu 1%, você ganhou apenas 0,2% de verdade. Se rendeu menos que o IPCA, você perdeu poder de compra — mesmo que o número na conta tenha crescido.",
+            "Por isso o 'retorno real' importa: é o que sobra depois de descontar a inflação. Um investimento só faz seu dinheiro crescer de verdade se o retorno real for positivo."
+          ],
+          "dica_app": "O Gastô mostra o IPCA mensal na aba Mercado. Use para avaliar se seus investimentos estão ganhando ou perdendo da inflação.",
+          "link_externo": ""
+        },
+        {
+          "id": "fund-4",
+          "titulo": "IR sobre investimentos: a tabela regressiva",
+          "emoji": "📋",
+          "nivel": "iniciante",
+          "tempo": "4 min",
+          "conteudo": [
+            "A maioria dos investimentos de renda fixa tem Imposto de Renda sobre o rendimento, seguindo uma tabela regressiva: quanto mais tempo você mantém, menos IR paga.",
+            "A tabela: até 180 dias = 22,5%; de 181 a 360 dias = 20%; de 361 a 720 dias = 17,5%; acima de 720 dias = 15%. Isso incentiva o investimento de longo prazo.",
+            "LCI, LCA e poupança são isentos de IR para pessoas físicas. Ações têm IR de 15% sobre o ganho (20% para day trade), com isenção para vendas abaixo de R$ 20.000 por mês."
+          ],
+          "dica_app": "No simulador do Gastô os valores são brutos (sem IR). Para calcular o líquido, desconte o percentual da tabela conforme o prazo do investimento escolhido.",
+          "link_externo": ""
+        }
+      ]
+    }
+  ]
+}

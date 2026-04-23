@@ -433,6 +433,25 @@ export default function ReportsScreen() {
           </View>
         )}
 
+        {/* Simulador */}
+        <Pressable
+          style={s.simuladorBtn}
+          onPress={() => router.push({ pathname: "/simulator", params: { saldo: String(Math.max(0, saldo)) } })}
+        >
+          <View style={s.simuladorBtnInner}>
+            <Text style={s.simuladorEmoji}>🔮</Text>
+            <View>
+              <Text style={s.simuladorTitulo}>Seu Dinheiro no Futuro</Text>
+              <Text style={s.simuladorSub}>
+                {saldo > 0
+                  ? `Simule com seu saldo de ${saldo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}/mês`
+                  : "Simule quanto você pode acumular"}
+              </Text>
+            </View>
+          </View>
+          <Text style={s.simuladorSeta}>→</Text>
+        </Pressable>
+
       </ScrollView>
 
       {/* Modal meta de economia */}
@@ -562,6 +581,13 @@ const s = StyleSheet.create({
   diaBar: { width: 18, borderRadius: 4 },
   diaDia: { fontSize: 10, color: "#AAA" },
   diaDiaHoje: { color: "#6C63FF", fontWeight: "700" },
+
+  simuladorBtn: { marginHorizontal: 16, marginTop: 16, marginBottom: 8, backgroundColor: "#6C63FF", borderRadius: 18, padding: 18, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  simuladorBtnInner: { flexDirection: "row", alignItems: "center", gap: 14, flex: 1 },
+  simuladorEmoji: { fontSize: 28 },
+  simuladorTitulo: { color: "#fff", fontSize: 15, fontWeight: "700" },
+  simuladorSub: { color: "rgba(255,255,255,0.75)", fontSize: 12, marginTop: 2 },
+  simuladorSeta: { color: "#fff", fontSize: 20, fontWeight: "700" },
 
   // Modal meta
   modalBackdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "flex-end" },
