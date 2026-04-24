@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../lib/theme";
 import { useAppConfig } from "../lib/AppConfigContext";
 import { fetchIndicadores } from "../lib/bcb";
+import { mediaGastosMensais } from "../lib/db";
 
 interface Investimento {
   id: string;
@@ -70,8 +71,11 @@ export default function SimulatorScreen() {
   const [periodoIdx, setPeriodoIdx] = useState(2);
   const [investimentos, setInvestimentos] = useState(BASE_INVESTIMENTOS);
   const [taxaLive, setTaxaLive] = useState(false);
+  const [mediaGastos, setMediaGastos] = useState(0);
 
   useEffect(() => {
+    mediaGastosMensais(3).then(setMediaGastos).catch(() => {});
+
     fetchIndicadores().then((inds) => {
       const cdi = inds.find((i) => i.serie === 4389);
       if (!cdi || cdi.valor === "—") return;
@@ -224,6 +228,49 @@ export default function SimulatorScreen() {
             </View>
           )}
 
+          {/* Calculadora de Independência Financeira */}
+          {temValor && mediaGastos > 0 && (
+            (() => {
+              const gastoAnual = mediaGastos * 12;
+              const patrimonioIF = gastoAnual * 25; // regra dos 4%
+              const melhorTaxa = Math.max(...investimentos.map((i) => i.taxaAA));
+              // Calcula anos até atingir o patrimônio necessário com aporte atual + inicial
+              let anos = 0;
+              let acumulado = inicial;
+              const r = Math.pow(1 + melhorTaxa, 1 / 12) - 1;
+              while (acumulado < patrimonioIF && anos < 100) {
+                anos++;
+                for (let m = 0; m < 12; m++) acumulado = acumulado * (1 + r) + aporte;
+              }
+              const pct = Math.min((acumulado > 0 && inicial > 0) || aporte > 0
+                ? Math.round(((inicial) / patrimonioIF) * 100) : 0, 100);
+              return (
+                <View style={[s.ifCard, { backgroundColor: t.surfaceAlt }]}>
+                  <Text style={[s.ifTitulo, { color: t.text }]}>🏝️ Independência Financeira</Text>
+                  <Text style={[s.ifSub, { color: t.textMuted }]}>
+                    Com gastos médios de {fmt(mediaGastos)}/mês, você precisa de:
+                  </Text>
+                  <Text style={[s.ifPatrimonio, { color: "#6C63FF" }]}>{formatCompact(patrimonioIF)}</Text>
+                  <Text style={[s.ifRegra, { color: t.textMuted }]}>Regra dos 4% — rende mais do que você gasta</Text>
+                  <View style={[s.ifDivider, { backgroundColor: t.divider }]} />
+                  <Text style={[s.ifAnos, { color: t.text }]}>
+                    Com esse aporte no melhor investimento:{" "}
+                    <Text style={{ color: "#6C63FF", fontWeight: "800" }}>
+                      {anos >= 100 ? "+100" : anos} {anos === 1 ? "ano" : "anos"}
+                    </Text>
+                  </Text>
+                  {anos < 40 && (
+                    <View style={[s.ifBadge, { backgroundColor: "#2ECC7118" }]}>
+                      <Text style={[s.ifBadgeText, { color: "#2ECC71" }]}>
+                        🎯 Aumente o aporte para chegar mais rápido
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              );
+            })()
+          )}
+
           <Pressable style={[s.btnFechar, { borderColor: t.border }]} onPress={() => router.back()}>
             <Text style={[s.btnFecharText, { color: t.textSub }]}>Fechar</Text>
           </Pressable>
@@ -280,4 +327,14 @@ const s = StyleSheet.create({
 
   btnFechar: { borderWidth: 1.5, borderRadius: 14, paddingVertical: 14, alignItems: "center", marginTop: 8 },
   btnFecharText: { fontSize: 15, fontWeight: "600" },
+
+  ifCard: { borderRadius: 18, padding: 18, marginBottom: 16 },
+  ifTitulo: { fontSize: 16, fontWeight: "800", marginBottom: 6 },
+  ifSub: { fontSize: 13, marginBottom: 8 },
+  ifPatrimonio: { fontSize: 28, fontWeight: "800", marginBottom: 2 },
+  ifRegra: { fontSize: 11, marginBottom: 12 },
+  ifDivider: { height: 1, marginBottom: 12 },
+  ifAnos: { fontSize: 14, marginBottom: 10 },
+  ifBadge: { borderRadius: 10, padding: 10 },
+  ifBadgeText: { fontSize: 13, fontWeight: "600" },
 });

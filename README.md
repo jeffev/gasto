@@ -1,6 +1,6 @@
 # Gastô
 
-> App Android de finanças pessoais com registro por voz e texto, classificação automática offline, simulador de investimentos e educação financeira.
+> App Android de finanças pessoais com registro por voz e texto, classificação automática offline, score financeiro, metas, desafios, importação de CSV, widget nativo e educação financeira — tudo 100% local.
 
 [![Download APK](https://img.shields.io/badge/Download-APK-6C63FF?style=for-the-badge&logo=android)](https://github.com/jeffev/gasto/releases/latest/download/gasto.apk)
 [![GitHub Pages](https://img.shields.io/badge/Site-GitHub%20Pages-222?style=for-the-badge&logo=github)](https://jeffev.github.io/gasto/)
@@ -37,6 +37,14 @@ O usuário fala ou digita algo como *"uber vinte reais"*. O app transcreve a fal
 | 🌙 | Tema claro, escuro ou automático pelo sistema |
 | ⚙️ | Configurações de nome e moeda |
 | 🔒 | 100% local — SQLite no dispositivo, sem cadastro |
+| 🏅 | Score financeiro mensal (0–100): poupança, orçamentos e meta |
+| 💡 | Análise de padrões automática: crescimento por categoria, fins de semana, tendência 3 meses |
+| 🏆 | Metas por objetivo com prazo, progresso e aporte mensal calculado |
+| 🔢 | Calculadora de independência financeira (regra dos 4%) com projeção de anos |
+| 📉 | Comparativo com inflação real: cada categoria vs IPCA do período (API BCB) |
+| 💪 | Modo desafio semanal: metas de redução geradas a partir dos seus próprios gastos |
+| 📂 | Importar extrato CSV de qualquer banco com classificação automática offline |
+| 📱 | Widget Android — saldo do mês na tela inicial, atualiza a cada 30 min |
 
 ---
 
@@ -59,8 +67,11 @@ gasto/
 │   │   ├── add-entrada.tsx           # Nova entrada de receita
 │   │   ├── budget.tsx                # Orçamentos por categoria
 │   │   ├── next-month.tsx            # Visão do próximo mês (recorrentes)
-│   │   ├── simulator.tsx             # Simulador de investimentos
+│   │   ├── simulator.tsx             # Simulador de investimentos + calculadora IF
 │   │   ├── pill.tsx                  # Leitura de pílula educacional
+│   │   ├── goals.tsx                 # Metas por objetivo (prazo, progresso, aporte)
+│   │   ├── challenge.tsx             # Modo desafio semanal por categoria
+│   │   ├── import-csv.tsx            # Importar extrato CSV de banco
 │   │   └── termos.tsx                # Termos de uso / privacidade
 │   ├── components/
 │   │   └── ExpenseItem.tsx           # Card com swipe deletar/editar + status pago
@@ -80,6 +91,14 @@ gasto/
 │   └── assets/
 │       └── model.json                # Modelo exportado pelo export_model.py
 │
+├── android/                          # Módulos nativos Android
+│   └── app/src/main/
+│       ├── java/com/anonymous/gasto/
+│       │   └── SaldoWidget.kt        # AppWidgetProvider — lê SQLite e exibe saldo
+│       └── res/
+│           ├── layout/widget_saldo.xml   # Layout do widget
+│           └── xml/widget_info.xml       # Metadados (tamanho, intervalo de atualização)
+│
 ├── model/                            # Pipeline de treinamento do classificador
 │   ├── generate_dataset.py           # Gera dataset sintético em português
 │   ├── train.py                      # Treina TF-IDF + LinearSVC
@@ -90,7 +109,7 @@ gasto/
 └── docs/                             # Site GitHub Pages
     ├── index.html
     ├── styles.css
-    ├── courses.json                  # Conteúdo de educação financeira (18 pílulas)
+    ├── courses.json                  # Conteúdo de educação financeira (30 pílulas, 5 trilhas)
     └── screenshots/
 ```
 
@@ -109,7 +128,9 @@ gasto/
 | Animações | `react-native-reanimated` 4.x | Requer New Architecture |
 | Indicadores financeiros | API BCB/SGS | Dólar, Euro, CDI, Selic, IPCA — sem chave |
 | Notícias | RSS puro TS | G1 Economia + InfoMoney, parser sem dependências |
-| Educação | JSON em GitHub Pages | `courses.json` com 4 trilhas e 18 pílulas |
+| Educação | JSON em GitHub Pages | `courses.json` com 5 trilhas e 30 pílulas |
+| Importação de CSV | `expo-document-picker` + parser TS | Auto-detecta separador, colunas e datas |
+| Widget Android | `AppWidgetProvider` Kotlin nativo | Lê SQLite diretamente, atualiza a cada 30 min |
 
 ---
 

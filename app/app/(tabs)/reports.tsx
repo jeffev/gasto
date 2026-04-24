@@ -8,8 +8,10 @@ import {
   Text,
   TextInput,
   View,
+  Animated,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
+import { fetchIndicadores } from "../../lib/bcb";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
@@ -18,7 +20,7 @@ import Svg, { Path, Circle, G } from "react-native-svg";
 import {
   listarDespesasDoMes, totalDoMes, totalPorCategoria,
   listarOrcamentos, listarEntradasDoMes, totalEntradasDoMes,
-  buscarMeta, salvarMeta,
+  buscarMeta, salvarMeta, buscarDadosInsights, InsightDados,
 } from "../../lib/db";
 import { Despesa, Entrada, Orcamento } from "../../lib/types";
 import { getCategoria } from "../../constants/categories";
@@ -30,6 +32,139 @@ const MESES = [
 ];
 
 interface CategoriaTotais { categoria: string; total: number; }
+
+// ---------------------------------------------------------------------------
+// Score financeiro
+// ---------------------------------------------------------------------------
+interface FatorScore { nome: string; pts: number; max: number; detalhe: string; }
+
+// ---------------------------------------------------------------------------
+// Gerador de insights
+// ---------------------------------------------------------------------------
+interface Insight { emoji: string; texto: string; tipo: "positivo" | "neutro" | "atencao"; }
+
+function gerarInsights(dados: InsightDados, mesAtual: string): Insight[] {
+  const insights: Insight[] = [];
+  const { totalPorCategoriaMes, totalPorDiaSemana, assinaturas } = dados;
+
+  // 1. Crescimento de categoria nos últimos 2 meses
+  const meses = [...new Set(totalPorCategoriaMes.map((r) => r.mes))].sort().slice(-3);
+  if (meses.length >= 2) {
+    const mesAnt = meses[meses.length - 2];
+    const mes2 = meses[meses.length - 1];
+    const categorias = [...new Set(totalPorCategoriaMes.map((r) => r.categoria))];
+    for (const cat of categorias) {
+      const ant = totalPorCategoriaMes.find((r) => r.mes === mesAnt && r.categoria === cat)?.total ?? 0;
+      const atual = totalPorCategoriaMes.find((r) => r.mes === mes2 && r.categoria === cat)?.total ?? 0;
+      if (ant > 0 && atual > ant) {
+        const delta = atual - ant;
+        const pct = Math.round((delta / ant) * 100);
+        if (pct >= 20 && delta >= 50) {
+          insights.push({ emoji: "📈", texto: `${cat} subiu ${pct}% (R$ ${delta.toFixed(0)}) vs mês passado`, tipo: "atencao" });
+        }
+      }
+    }
+  }
+
+  // 2. Gasto maior nos fins de semana vs dias úteis
+  const fds = totalPorDiaSemana.filter((d) => d.dow === 0 || d.dow === 6);
+  const semana = totalPorDiaSemana.filter((d) => d.dow >= 1 && d.dow <= 5);
+  const mediaDia = (arr: typeof fds) => {
+    const t = arr.reduce((s, d) => s + d.total, 0);
+    const q = arr.reduce((s, d) => s + d.qtd, 0);
+    return q > 0 ? t / q : 0;
+  };
+  const mFds = mediaDia(fds);
+  const mSem = mediaDia(semana);
+  if (mFds > 0 && mSem > 0) {
+    const diff = Math.round(((mFds - mSem) / mSem) * 100);
+    if (diff >= 30) {
+      insights.push({ emoji: "🗓️", texto: `Você gasta ${diff}% mais por despesa nos fins de semana`, tipo: "atencao" });
+    } else if (diff <= -20) {
+      insights.push({ emoji: "✅", texto: `Fins de semana mais econômicos — ${Math.abs(diff)}% menos por despesa`, tipo: "positivo" });
+    }
+  }
+
+  // 3. Total de assinaturas
+  if (assinaturas.length > 0) {
+    const total = assinaturas.reduce((s, a) => s + a.valor, 0);
+    insights.push({ emoji: "📱", texto: `${assinaturas.length} assinatura${assinaturas.length > 1 ? "s" : ""} recorrente${assinaturas.length > 1 ? "s" : ""} somam R$ ${total.toFixed(0)}/mês`, tipo: total > 300 ? "atencao" : "neutro" });
+  }
+
+  // 4. Tendência de 3 meses (total geral)
+  if (meses.length >= 3) {
+    const totaisMes = meses.map((m) =>
+      totalPorCategoriaMes.filter((r) => r.mes === m).reduce((s, r) => s + r.total, 0)
+    );
+    const crescente = totaisMes[0] < totaisMes[1] && totaisMes[1] < totaisMes[2];
+    const decrescente = totaisMes[0] > totaisMes[1] && totaisMes[1] > totaisMes[2];
+    if (crescente) {
+      insights.push({ emoji: "⚠️", texto: "Gastos totais em alta por 3 meses consecutivos", tipo: "atencao" });
+    } else if (decrescente) {
+      insights.push({ emoji: "🎯", texto: "Gastos em queda por 3 meses — bom trabalho!", tipo: "positivo" });
+    }
+  }
+
+  return insights.slice(0, 4);
+}
+
+function calcularScore(params: {
+  totalEntradas: number;
+  totalDespesas: number;
+  saldo: number;
+  meta: number;
+  orcamentos: Orcamento[];
+  porCategoria: CategoriaTotais[];
+}): { score: number; label: string; cor: string; emoji: string; fatores: FatorScore[] } {
+  const { totalEntradas, totalDespesas, saldo, meta, orcamentos, porCategoria } = params;
+  const fatores: FatorScore[] = [];
+
+  // 1. Taxa de poupança (0–40 pts)
+  let ptsPoupanca = 0;
+  if (totalEntradas > 0) {
+    const taxa = saldo / totalEntradas;
+    ptsPoupanca = taxa >= 0.20 ? 40 : taxa <= 0 ? 0 : Math.round((taxa / 0.20) * 40);
+    const pct = totalEntradas > 0 ? Math.round((saldo / totalEntradas) * 100) : 0;
+    fatores.push({ nome: "Taxa de poupança", pts: ptsPoupanca, max: 40, detalhe: `${pct}% da renda` });
+  } else if (totalDespesas > 0) {
+    fatores.push({ nome: "Taxa de poupança", pts: 0, max: 40, detalhe: "Sem entradas registradas" });
+  } else {
+    ptsPoupanca = 20; // sem dados, neutro
+    fatores.push({ nome: "Taxa de poupança", pts: 20, max: 40, detalhe: "Sem dados este mês" });
+  }
+
+  // 2. Orçamentos respeitados (0–35 pts)
+  const catsComOrc = porCategoria.filter(c => orcamentos.some(o => o.categoria === c.categoria));
+  if (catsComOrc.length > 0) {
+    const respeitados = catsComOrc.filter(c => {
+      const orc = orcamentos.find(o => o.categoria === c.categoria)!;
+      return c.total <= orc.limite;
+    }).length;
+    const ptsOrc = Math.round((respeitados / catsComOrc.length) * 35);
+    fatores.push({ nome: "Orçamentos", pts: ptsOrc, max: 35, detalhe: `${respeitados}/${catsComOrc.length} dentro do limite` });
+  } else {
+    fatores.push({ nome: "Orçamentos", pts: 18, max: 35, detalhe: "Nenhum orçamento definido" });
+  }
+
+  // 3. Meta de economia (0–25 pts)
+  if (meta > 0) {
+    const ptsMeta = saldo >= meta ? 25 : saldo <= 0 ? 0 : Math.round((saldo / meta) * 25);
+    const pct = Math.min(Math.round((saldo / meta) * 100), 100);
+    fatores.push({ nome: "Meta do mês", pts: ptsMeta, max: 25, detalhe: saldo >= meta ? "Meta atingida! 🎉" : `${pct}% da meta` });
+  } else {
+    fatores.push({ nome: "Meta do mês", pts: 13, max: 25, detalhe: "Meta não definida" });
+  }
+
+  const score = Math.min(100, fatores.reduce((s, f) => s + f.pts, 0));
+
+  let label: string, cor: string, emoji: string;
+  if (score >= 80) { label = "Excelente"; cor = "#2ECC71"; emoji = "🌟"; }
+  else if (score >= 60) { label = "Bom"; cor = "#3498DB"; emoji = "👍"; }
+  else if (score >= 40) { label = "Regular"; cor = "#F39C12"; emoji = "🔶"; }
+  else { label = "Atenção"; cor = "#FF4757"; emoji = "⚠️"; }
+
+  return { score, label, cor, emoji, fatores };
+}
 
 // ---------------------------------------------------------------------------
 // Gráfico de pizza (donut)
@@ -95,21 +230,27 @@ export default function ReportsScreen() {
   const [despesas, setDespesas] = useState<Despesa[]>([]);
   const [entradas, setEntradas] = useState<Entrada[]>([]);
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([]);
+  const [porCategoriaAnt, setPorCategoriaAnt] = useState<CategoriaTotais[]>([]);
+  const [ipcaMes, setIpcaMes] = useState<number | null>(null);
 
   // Meta de economia
   const [meta, setMeta] = useState(0);
   const [modalMeta, setModalMeta] = useState(false);
   const [metaStr, setMetaStr] = useState("");
 
+  // Insights
+  const [insights, setInsights] = useState<Insight[]>([]);
+
   useFocusEffect(useCallback(() => { carregarDados(); }, [ano, mes]));
 
   async function carregarDados() {
     const mesAnt = mes === 1 ? 12 : mes - 1;
     const anoAnt = mes === 1 ? ano - 1 : ano;
-    const [total, totAnt, cats, lista, orc, totalE, listaE, metaValor] = await Promise.all([
+    const [total, totAnt, cats, catsAnt, lista, orc, totalE, listaE, metaValor] = await Promise.all([
       totalDoMes(ano, mes),
       totalDoMes(anoAnt, mesAnt),
       totalPorCategoria(ano, mes),
+      totalPorCategoria(anoAnt, mesAnt),
       listarDespesasDoMes(ano, mes),
       listarOrcamentos(),
       totalEntradasDoMes(ano, mes),
@@ -120,10 +261,24 @@ export default function ReportsScreen() {
     setTotalAnterior(totAnt);
     setTotalEntradas(totalE);
     setPorCategoria(cats);
+    setPorCategoriaAnt(catsAnt);
     setDespesas(lista);
     setEntradas(listaE);
     setOrcamentos(orc);
     setMeta(metaValor);
+
+    const mesStr = `${ano}-${String(mes).padStart(2, "0")}`;
+    buscarDadosInsights().then((dados) => setInsights(gerarInsights(dados, mesStr))).catch(() => {});
+
+    if (ipcaMes === null) {
+      fetchIndicadores().then((inds) => {
+        const ipca = inds.find((i) => i.serie === 433);
+        if (ipca && ipca.valor !== "—") {
+          const v = parseFloat(ipca.valor.replace("%", "").replace(",", "."));
+          if (!isNaN(v)) setIpcaMes(v);
+        }
+      }).catch(() => {});
+    }
   }
 
   function navegar(direcao: -1 | 1) {
@@ -173,6 +328,14 @@ export default function ReportsScreen() {
 
   const saldo = totalEntradas - totalAtual;
   const variacao = totalAnterior > 0 ? ((totalAtual - totalAnterior) / totalAnterior) * 100 : null;
+  const scoreData = calcularScore({
+    totalEntradas,
+    totalDespesas: totalAtual,
+    saldo,
+    meta,
+    orcamentos,
+    porCategoria,
+  });
   const maiorCategoria = porCategoria[0]?.total ?? 1;
   const isMesAtual = ano === hoje.getFullYear() && mes === hoje.getMonth() + 1;
   const topDespesas = [...despesas].sort((a, b) => b.valor - a.valor).slice(0, 5);
@@ -232,6 +395,15 @@ export default function ReportsScreen() {
             <Pressable style={s.cardBtn} onPress={() => router.push("/budget")}>
               <Text style={s.cardBtnText}>🎯 Orçamentos</Text>
             </Pressable>
+            <Pressable style={s.cardBtn} onPress={() => router.push("/goals")}>
+              <Text style={s.cardBtnText}>🏆 Objetivos</Text>
+            </Pressable>
+            <Pressable style={s.cardBtn} onPress={() => router.push("/challenge")}>
+              <Text style={s.cardBtnText}>💪 Desafios</Text>
+            </Pressable>
+            <Pressable style={s.cardBtn} onPress={() => router.push("/import-csv")}>
+              <Text style={s.cardBtnText}>📂 Importar</Text>
+            </Pressable>
           </View>
         </View>
 
@@ -258,6 +430,53 @@ export default function ReportsScreen() {
                 {saldo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </Text>
             </View>
+          </View>
+        )}
+
+        {/* Score financeiro */}
+        <View style={s.scoreCard}>
+          <View style={s.scoreHeader}>
+            <View>
+              <Text style={s.scoreTitulo}>Score financeiro</Text>
+              <Text style={s.scoreMes}>{MESES[mes - 1]} {ano}</Text>
+            </View>
+            <View style={[s.scoreCirculo, { borderColor: scoreData.cor }]}>
+              <Text style={[s.scoreNumero, { color: scoreData.cor }]}>{scoreData.score}</Text>
+              <Text style={s.scoreDe}>/100</Text>
+            </View>
+          </View>
+          <View style={[s.scoreLabelRow, { backgroundColor: scoreData.cor + "18" }]}>
+            <Text style={[s.scoreLabel, { color: scoreData.cor }]}>{scoreData.emoji} {scoreData.label}</Text>
+          </View>
+          {scoreData.fatores.map((f) => (
+            <View key={f.nome} style={s.scoreFatorRow}>
+              <View style={s.scoreFatorInfo}>
+                <Text style={s.scoreFatorNome}>{f.nome}</Text>
+                <Text style={s.scoreFatorDetalhe}>{f.detalhe}</Text>
+              </View>
+              <View style={s.scoreFatorBarWrap}>
+                <View style={s.scoreFatorBarFundo}>
+                  <View style={[s.scoreFatorBarFill, { width: `${Math.round((f.pts / f.max) * 100)}%` as any, backgroundColor: scoreData.cor }]} />
+                </View>
+                <Text style={[s.scoreFatorPts, { color: scoreData.cor }]}>{f.pts}/{f.max}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* Insights de padrões */}
+        {insights.length > 0 && (
+          <View style={s.insightsCard}>
+            <Text style={s.insightsTitulo}>💡 Padrões identificados</Text>
+            {insights.map((ins, i) => (
+              <View key={i} style={[s.insightRow, {
+                backgroundColor: ins.tipo === "positivo" ? "#2ECC7112" : ins.tipo === "atencao" ? "#FF475712" : "#6C63FF0D",
+                borderLeftColor: ins.tipo === "positivo" ? "#2ECC71" : ins.tipo === "atencao" ? "#FF4757" : "#6C63FF",
+              }]}>
+                <Text style={s.insightEmoji}>{ins.emoji}</Text>
+                <Text style={s.insightTexto}>{ins.texto}</Text>
+              </View>
+            ))}
           </View>
         )}
 
@@ -330,6 +549,17 @@ export default function ReportsScreen() {
               const orc = orcamentos.find(o => o.categoria === item.categoria);
               const ultrapassou = orc && item.total > orc.limite;
               const pctOrc = orc ? Math.min(Math.round((item.total / orc.limite) * 100), 100) : null;
+              // Comparativo inflação
+              const totalAnt = porCategoriaAnt.find(c => c.categoria === item.categoria)?.total ?? 0;
+              let inflacaoTag: { texto: string; cor: string } | null = null;
+              if (totalAnt > 0 && ipcaMes !== null) {
+                const crescimento = ((item.total - totalAnt) / totalAnt) * 100;
+                if (crescimento > ipcaMes + 2) {
+                  inflacaoTag = { texto: `↑ ${crescimento.toFixed(1)}% (IPCA ${ipcaMes.toFixed(1)}%)`, cor: "#FF4757" };
+                } else if (crescimento < ipcaMes - 2) {
+                  inflacaoTag = { texto: `↓ ${crescimento.toFixed(1)}% (IPCA ${ipcaMes.toFixed(1)}%)`, cor: "#2ECC71" };
+                }
+              }
               return (
                 <View key={item.categoria} style={s.catRow}>
                   <View style={s.catRowTop}>
@@ -353,6 +583,9 @@ export default function ReportsScreen() {
                       {ultrapassou ? "⚠️ Limite ultrapassado" : `Limite: R$ ${orc.limite.toFixed(2)}`}
                       {pctOrc !== null ? `  (${pctOrc}%)` : ""}
                     </Text>
+                  ) : null}
+                  {inflacaoTag ? (
+                    <Text style={[s.inflacaoHint, { color: inflacaoTag.cor }]}>{inflacaoTag.texto} vs mês passado</Text>
                   ) : null}
                 </View>
               );
@@ -525,6 +758,32 @@ const s = StyleSheet.create({
   saldoNeg: { color: "#FF4757" },
   saldoDivider: { width: 1, backgroundColor: "#F0F0F0", marginVertical: 4 },
 
+  // Insights
+  insightsCard: { backgroundColor: "#fff", borderRadius: 20, padding: 20, marginBottom: 16, shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 1 },
+  insightsTitulo: { fontSize: 15, fontWeight: "700", color: "#1A1A2E", marginBottom: 12 },
+  insightRow: { flexDirection: "row", alignItems: "flex-start", gap: 10, padding: 12, borderRadius: 12, borderLeftWidth: 3, marginBottom: 8 },
+  insightEmoji: { fontSize: 16, lineHeight: 22 },
+  insightTexto: { flex: 1, fontSize: 13, color: "#333", lineHeight: 20 },
+
+  // Score financeiro
+  scoreCard: { backgroundColor: "#fff", borderRadius: 20, padding: 20, marginBottom: 16, shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 1 },
+  scoreHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
+  scoreTitulo: { fontSize: 15, fontWeight: "700", color: "#1A1A2E" },
+  scoreMes: { fontSize: 12, color: "#AAA", marginTop: 2 },
+  scoreCirculo: { width: 64, height: 64, borderRadius: 32, borderWidth: 3, justifyContent: "center", alignItems: "center" },
+  scoreNumero: { fontSize: 22, fontWeight: "800", lineHeight: 26 },
+  scoreDe: { fontSize: 10, color: "#AAA", lineHeight: 12 },
+  scoreLabelRow: { borderRadius: 10, paddingVertical: 6, paddingHorizontal: 12, alignSelf: "flex-start", marginBottom: 14 },
+  scoreLabel: { fontSize: 13, fontWeight: "700" },
+  scoreFatorRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 },
+  scoreFatorInfo: { flex: 1, marginRight: 12 },
+  scoreFatorNome: { fontSize: 13, fontWeight: "600", color: "#333" },
+  scoreFatorDetalhe: { fontSize: 11, color: "#AAA", marginTop: 1 },
+  scoreFatorBarWrap: { flexDirection: "row", alignItems: "center", gap: 6, width: 110 },
+  scoreFatorBarFundo: { flex: 1, height: 6, backgroundColor: "#F0F0F0", borderRadius: 3, overflow: "hidden" },
+  scoreFatorBarFill: { height: 6, borderRadius: 3 },
+  scoreFatorPts: { fontSize: 11, fontWeight: "700", width: 32, textAlign: "right" },
+
   // Meta de economia
   metaCard: { backgroundColor: "#fff", borderRadius: 20, padding: 20, marginBottom: 16, shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 1 },
   metaHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
@@ -565,6 +824,7 @@ const s = StyleSheet.create({
   barraFundo: { height: 6, backgroundColor: "#F0F0F0", borderRadius: 3, overflow: "hidden" },
   barraPreenchimento: { height: 6, borderRadius: 3 },
   orcamentoHint: { fontSize: 11, color: "#AAA", marginTop: 4 },
+  inflacaoHint: { fontSize: 11, fontWeight: "600", marginTop: 3 },
 
   entradaValor: { fontSize: 14, fontWeight: "700", color: "#2ECC71" },
   topRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 12 },

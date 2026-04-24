@@ -1,5 +1,5 @@
 {
-  "versao": "1.0",
+  "versao": "1.1",
   "atualizado": "2026-04-23",
   "trilhas": [
     {
@@ -21,7 +21,7 @@
             "O problema é que os juros incidem sobre os juros anteriores. No segundo mês, você paga 15% sobre R$ 1.150. No terceiro, sobre R$ 1.322. A bola de neve cresce sozinha e sem pressa.",
             "A lição é simples: nunca pague só o mínimo de dívidas rotativas. Cartão de crédito e cheque especial têm os juros mais altos do mercado. Quite o total sempre que possível, ou ao menos o máximo que conseguir."
           ],
-          "dica_app": "Crie um orçamento para a categoria 'Outros' ou crie uma meta de economia no Gastô para acompanhar quanto você está destinando ao pagamento de dívidas mensalmente.",
+          "dica_app": "Crie uma meta de economia no Gastô para acompanhar quanto você está destinando ao pagamento de dívidas mensalmente.",
           "link_externo": ""
         },
         {
@@ -78,6 +78,48 @@
             "O melhor lugar para o fundo de emergência é o Tesouro Selic ou um CDB de liquidez diária. Rende mais que a poupança, está disponível a qualquer momento e é protegido pelo FGC até R$ 250.000."
           ],
           "dica_app": "Use a meta de economia do Gastô para acompanhar quanto já guardou para sua reserva. Defina a meta como 6x os seus gastos mensais médios do último relatório.",
+          "link_externo": ""
+        },
+        {
+          "id": "dividas-6",
+          "titulo": "Portabilidade de crédito: pague menos juros mudando de banco",
+          "emoji": "🔀",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "Portabilidade de crédito é o direito de transferir uma dívida de um banco para outro que ofereça juros menores. É regulamentada pelo Banco Central e o banco original não pode se recusar.",
+            "Funciona assim: você negocia com o novo banco a taxa menor. Ele quita a dívida no banco original e você passa a pagar ao novo banco. O saldo devedor é o mesmo — só os juros futuros mudam.",
+            "Antes de pedir portabilidade, consulte sua taxa atual no contrato ou aplicativo do banco. Pesquise no site do Banco Central (registrato.bcb.gov.br) as taxas médias do mercado e use isso na negociação."
+          ],
+          "dica_app": "Verifique na aba Mercado do Gastô as taxas de juros de referência do BCB para ter argumentos na hora de negociar com o banco.",
+          "link_externo": ""
+        },
+        {
+          "id": "dividas-7",
+          "titulo": "Como sair do nome sujo: passo a passo",
+          "emoji": "🧹",
+          "nivel": "iniciante",
+          "tempo": "4 min",
+          "conteudo": [
+            "Estar com o nome sujo (negativado no Serasa ou SPC) impede abrir conta, pegar crédito e até conseguir emprego em algumas empresas. Mas saída tem — e começa com uma consulta gratuita no serasa.com.br.",
+            "Passo 1: consulte todas as dívidas negativadas. Passo 2: priorize as que têm desconto maior ou já se aproximam da prescrição (5 anos para maioria). Passo 3: negocie pelo portal ou diretamente com o credor. Passo 4: pague e guarde o comprovante.",
+            "Depois do pagamento, a exclusão do cadastro deve ocorrer em até 5 dias úteis. Se não acontecer, o credor é obrigado a retirar — você pode acionar o Procon ou o Banco Central se houver demora."
+          ],
+          "dica_app": "Após quitar a dívida, registre o pagamento no Gastô na categoria Outros com a nota 'quitação Serasa' para ter o histórico organizado.",
+          "link_externo": ""
+        },
+        {
+          "id": "dividas-8",
+          "titulo": "Crédito consignado: quando vale e quando armadilha",
+          "emoji": "⚠️",
+          "nivel": "intermediário",
+          "tempo": "4 min",
+          "conteudo": [
+            "O crédito consignado é descontado direto do salário ou benefício — por isso os juros são muito menores que o crédito pessoal. Para servidores públicos e aposentados, pode ser abaixo de 2% ao mês, versus 8%+ no pessoal.",
+            "Quando vale: para quitar dívidas mais caras (cartão, cheque especial) trocando por juros menores. Você paga menos e alivia o custo da dívida.",
+            "Quando é armadilha: quando é usado para consumo (viagem, eletrodoméstico) sem a dívida anterior. O desconto automático no salário reduz o dinheiro disponível por meses ou anos — e muitos perdem o controle do orçamento."
+          ],
+          "dica_app": "Se fizer consignado, registre a parcela como despesa recorrente no Gastô na categoria Outros para garantir que seu orçamento mensal já considera o desconto.",
           "link_externo": ""
         }
       ]
@@ -159,6 +201,48 @@
           ],
           "dica_app": "Registre seus aportes mensais como entradas na categoria Investimentos no Gastô para acompanhar o total acumulado ao longo dos meses.",
           "link_externo": ""
+        },
+        {
+          "id": "render-6",
+          "titulo": "Tesouro IPCA+: proteja o poder de compra",
+          "emoji": "🏛️",
+          "nivel": "intermediário",
+          "tempo": "4 min",
+          "conteudo": [
+            "O Tesouro IPCA+ paga uma taxa real fixa mais a inflação do período. Exemplo: IPCA+ 6,5% ao ano significa que você receberá 6,5% acima da inflação — não importa quanto o IPCA subir.",
+            "É ideal para objetivos de longo prazo (aposentadoria, compra de imóvel em 10+ anos) porque garante que seu dinheiro não perderá poder de compra. Com Selic alta, os prêmios costumam ser generosos.",
+            "Atenção: o Tesouro IPCA+ tem marcação a mercado. Se você vender antes do vencimento, pode perder dinheiro. Para quem vai segurar até o fim, esse risco não existe."
+          ],
+          "dica_app": "No simulador do Gastô, o 'Tesouro IPCA+' usa ~16,5% ao ano como referência. Para uma estimativa mais conservadora, use a taxa atual que aparece no Tesouro Direto.",
+          "link_externo": ""
+        },
+        {
+          "id": "render-7",
+          "titulo": "O custo invisível que destrói investimentos",
+          "emoji": "🕳️",
+          "nivel": "intermediário",
+          "tempo": "3 min",
+          "conteudo": [
+            "Taxa de administração, taxa de performance, come-cotas, spread do câmbio — são custos que muitos investidores ignoram e que podem consumir boa parte do rendimento ao longo dos anos.",
+            "Um fundo com 2% de taxa de administração ao ano parece pouco, mas em 20 anos pode consumir mais de 30% do seu patrimônio acumulado comparado a um ETF com 0,2%.",
+            "Regra prática: para renda fixa, prefira investimentos diretos (Tesouro, CDB, LCI) a fundos com taxa. Para renda variável, ETFs de baixo custo são superiores à maioria dos fundos ativos no longo prazo."
+          ],
+          "dica_app": "Use o simulador do Gastô para comparar o acúmulo de patrimônio com diferentes taxas. Uma diferença de 1,5% ao ano em 20 anos gera valores completamente distintos.",
+          "link_externo": ""
+        },
+        {
+          "id": "render-8",
+          "titulo": "Automatize: invista antes de gastar",
+          "emoji": "🤖",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "O maior obstáculo para investir não é falta de conhecimento — é a tentação de gastar o dinheiro antes de investir. A solução é automatizar para que a decisão não dependa da sua força de vontade.",
+            "Configure uma transferência automática para acontecer no dia seguinte ao seu salário cair. Mesmo que seja R$ 100. O valor pode crescer com o tempo, mas o hábito começa agora.",
+            "Bancos digitais como Nubank, Inter e C6 permitem agendamento de investimentos automáticos. No Tesouro Direto, existe o agendamento de compra mensal com valor fixo."
+          ],
+          "dica_app": "Registre cada aporte mensal como entrada na categoria Investimentos no Gastô. Ver o acúmulo mês a mês é motivação para não pular nenhum.",
+          "link_externo": ""
         }
       ]
     },
@@ -181,7 +265,7 @@
             "Quando o real se desvaloriza (o que acontece com frequência), ativos em dólar ou euro se valorizam em reais. Ter parte do patrimônio no exterior funciona como proteção natural contra crises locais.",
             "Não é preciso enviar dinheiro para fora do Brasil. Existem produtos na própria B3 que dão exposição ao mercado americano e global, comprados em reais como qualquer ação."
           ],
-          "dica_app": "No simulador do Gastô, experimente selecionar USD como moeda e simule quanto seu aporte mensal acumularia em dólares ao longo dos anos.",
+          "dica_app": "Acompanhe a cotação do Dólar e do Euro em tempo real na aba Mercado do Gastô para monitorar o impacto do câmbio nos seus investimentos.",
           "link_externo": ""
         },
         {
@@ -224,6 +308,48 @@
             "Para quem não quer o risco cambial, existem ETFs com hedge (proteção), como o SPXI11. A proteção tem custo: o fundo usa instrumentos financeiros para neutralizar a variação do câmbio, reduzindo parte do rendimento."
           ],
           "dica_app": "Compare no simulador do Gastô o mesmo aporte simulado em BRL e em USD para visualizar o impacto da variação cambial histórica no patrimônio acumulado.",
+          "link_externo": ""
+        },
+        {
+          "id": "exterior-5",
+          "titulo": "Conta no exterior: Avenue, Stake e opções",
+          "emoji": "🏧",
+          "nivel": "avançado",
+          "tempo": "4 min",
+          "conteudo": [
+            "Abrir conta em uma corretora internacional dá acesso direto às ações americanas, ETFs globais e Treasuries (títulos do governo dos EUA). As principais para brasileiros são Avenue, Stake e TD Ameritrade.",
+            "O processo é 100% digital: documentos enviados pelo app, conta aberta em 1 a 3 dias. O envio de dinheiro é feito via câmbio (remessa), com custo de 1% a 2% dependendo do valor e da plataforma.",
+            "Importante: ativos acima de US$ 60.000 no exterior estão sujeitos ao 'Estate Tax' americano se o titular falecer. Para patrimônios maiores, consulte um especialista em planejamento internacional."
+          ],
+          "dica_app": "Monitore o câmbio na aba Mercado do Gastô antes de fazer remessas — dias com dólar mais fraco reduzem o custo da conversão.",
+          "link_externo": ""
+        },
+        {
+          "id": "exterior-6",
+          "titulo": "IR sobre investimentos no exterior",
+          "emoji": "📋",
+          "nivel": "avançado",
+          "tempo": "4 min",
+          "conteudo": [
+            "Ganhos com investimentos no exterior são tributados no Brasil, mesmo que o dinheiro nunca tenha voltado para cá. As alíquotas seguem a tabela progressiva do IR (até 27,5%) para variação cambial e ganhos de capital.",
+            "Todo mês que você vender ativos com lucro acima de R$ 35.000, deve pagar DARF (Documento de Arrecadação de Receita) até o último dia útil do mês seguinte. Não espere a declaração anual.",
+            "Você também deve declarar os ativos na ficha 'Bens e Direitos' do IR anual, em reais pelo câmbio do último dia do ano. Rendimentos recebidos (dividendos, juros) entram em 'Rendimentos Tributáveis'."
+          ],
+          "dica_app": "Registre seus ganhos de capital de investimentos no exterior como entradas na categoria Investimentos no Gastô para manter o controle mensal.",
+          "link_externo": ""
+        },
+        {
+          "id": "exterior-7",
+          "titulo": "Cripto: o que é, riscos reais e como começar com segurança",
+          "emoji": "🪙",
+          "nivel": "avançado",
+          "tempo": "5 min",
+          "conteudo": [
+            "Criptoativos são ativos digitais descentralizados, sem banco central ou governo por trás. Bitcoin é o mais antigo e com maior liquidez; Ethereum é o principal para aplicações descentralizadas. Existem milhares de outros — a maioria sem valor real.",
+            "Os riscos são concretos: volatilidade extrema (queda de 80% em meses aconteceu várias vezes), ausência de FGC, golpes frequentes e projetos sem fundamento. Não é raro perder tudo em 'moedas' lançadas sem lastro.",
+            "Se quiser exposição, comece com uma fatia pequena (1% a 5% do patrimônio) concentrada em Bitcoin e/ou Ethereum. Prefira exchanges regulamentadas no Brasil (Mercado Bitcoin, Binance BR). Nunca invista o que não pode perder."
+          ],
+          "dica_app": "Registre aportes em criptoativos como entradas na categoria Investimentos no Gastô. Isso ajuda a controlar o quanto do seu patrimônio total está exposto à volatilidade.",
           "link_externo": ""
         }
       ]
@@ -290,6 +416,142 @@
             "LCI, LCA e poupança são isentos de IR para pessoas físicas. Ações têm IR de 15% sobre o ganho (20% para day trade), com isenção para vendas abaixo de R$ 20.000 por mês."
           ],
           "dica_app": "No simulador do Gastô os valores são brutos (sem IR). Para calcular o líquido, desconte o percentual da tabela conforme o prazo do investimento escolhido.",
+          "link_externo": ""
+        },
+        {
+          "id": "fund-5",
+          "titulo": "FGC: o seguro dos seus investimentos",
+          "emoji": "🔒",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "O Fundo Garantidor de Créditos (FGC) protege o dinheiro investido em bancos em caso de falência. A cobertura é de até R$ 250.000 por CPF por instituição financeira — e até R$ 1 milhão por CPF no total.",
+            "O que é coberto: conta corrente, poupança, CDB, LCI, LCA, LC. O que não é coberto: Tesouro Direto (que é garantido pelo próprio governo federal), fundos de investimento, ações, debêntures.",
+            "Na prática, isso significa: se você tem R$ 250.000 em CDB no banco X e ele falir, você recebe tudo de volta. Se tiver R$ 400.000 no mesmo banco, perde R$ 150.000. Distribua entre instituições para maximizar a proteção."
+          ],
+          "dica_app": "Se seu saldo crescer, use o simulador do Gastô para ver o potencial de retorno distribuindo entre diferentes instituições com cobertura FGC separada.",
+          "link_externo": ""
+        },
+        {
+          "id": "fund-6",
+          "titulo": "Como calcular sua taxa de poupança real",
+          "emoji": "📊",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "Taxa de poupança é o percentual da sua renda que você consegue guardar. É o indicador mais importante das suas finanças — mais do que quanto você ganha.",
+            "Cálculo: (renda mensal - gastos totais) / renda mensal × 100. Se você recebe R$ 5.000 e gasta R$ 4.200, sua taxa é 16%. Quem poupa 20% chega à independência financeira em aproximadamente 37 anos; quem poupa 50%, em 17 anos.",
+            "Para aumentar a taxa: foque primeiro em reduzir as maiores despesas fixas (moradia, carro) — são elas que movem a agulha. Cortar café não resolve; mudar de apartamento ou vender o carro, sim."
+          ],
+          "dica_app": "No relatório mensal do Gastô, compare o total de entradas com o total de despesas para calcular sua taxa de poupança do mês.",
+          "link_externo": ""
+        },
+        {
+          "id": "fund-7",
+          "titulo": "Independência financeira: o número que muda tudo",
+          "emoji": "🏝️",
+          "nivel": "intermediário",
+          "tempo": "4 min",
+          "conteudo": [
+            "Independência financeira é quando seu patrimônio investido gera rendimentos suficientes para cobrir seus gastos — sem precisar trabalhar por obrigação. O 'número mágico' é 25x seus gastos anuais (regra dos 4%).",
+            "A regra dos 4%: se você retira 4% do patrimônio por ano, ele dura pelo menos 30 anos com grande probabilidade. Exemplo: gastos de R$ 5.000/mês = R$ 60.000/ano. Patrimônio necessário = R$ 1.500.000.",
+            "Não é um número inalcançável. Uma taxa de poupança de 30% sobre um salário médio, investindo consistentemente em renda variável por 20 anos, chega lá. O que determina é a consistência — não a genialidade."
+          ],
+          "dica_app": "No simulador do Gastô, calcule quanto seu aporte mensal atual acumularia em 20 ou 30 anos. Compare com 25x os seus gastos mensais do relatório para estimar quando chegaria à independência.",
+          "link_externo": ""
+        },
+        {
+          "id": "fund-8",
+          "titulo": "Gastos invisíveis: o dinheiro que some sem você ver",
+          "emoji": "👻",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "Gastos invisíveis são pequenas despesas que passam despercebidas mas somam muito: o delivery três vezes por semana (R$ 720/mês), as assinaturas esquecidas (R$ 150/mês), o café comprado todo dia (R$ 120/mês). Juntos, R$ 990 por mês — quase R$ 12.000 por ano.",
+            "O problema não é o gasto individual — é que nenhum parece relevante isolado. O delivery 'é só R$ 50'. A assinatura 'é só R$ 30'. A soma é que machuca o orçamento.",
+            "A única forma de enxergá-los é registrar. Quem registra tudo por 30 dias sempre se surpreende com pelo menos um gasto que nunca imaginou ser tão alto."
+          ],
+          "dica_app": "Use o registro diário no Gastô por um mês completo. No final, veja o relatório — a categoria que mais te surpreender provavelmente é onde estão seus gastos invisíveis.",
+          "link_externo": ""
+        }
+      ]
+    },
+    {
+      "id": "comportamento",
+      "titulo": "A psicologia do dinheiro",
+      "emoji": "🧠",
+      "cor": "#FF6B35",
+      "nivel": "iniciante",
+      "descricao": "Por que tomamos decisões financeiras ruins e como mudar isso de forma prática.",
+      "pilulas": [
+        {
+          "id": "comp-1",
+          "titulo": "Por que você gasta mais do que planeja",
+          "emoji": "🛒",
+          "nivel": "iniciante",
+          "tempo": "4 min",
+          "conteudo": [
+            "O cérebro humano não foi projetado para tomar boas decisões financeiras. Ele é movido por emoções, comparações sociais e vieses cognitivos que sistematicamente nos levam a gastar mais do que deveríamos.",
+            "Um dos mais poderosos é o viés do presente: valorizamos o prazer imediato muito mais do que o benefício futuro. R$ 100 hoje parece 'mais real' do que R$ 200 daqui a dois anos — mesmo que matematicamente seja um ótimo retorno.",
+            "Saber que esses vieses existem não os elimina, mas nos torna mais céticos com nossas próprias impulsos. A solução prática: crie fricção entre o impulso e a ação. Espere 24h antes de compras acima de R$ 100."
+          ],
+          "dica_app": "Antes de um gasto grande, registre-o como 'pendente' no Gastô e veja o impacto no orçamento antes de concluir a compra.",
+          "link_externo": ""
+        },
+        {
+          "id": "comp-2",
+          "titulo": "Inflação do estilo de vida: o sabotador silencioso",
+          "emoji": "📈",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "Inflação do estilo de vida acontece quando seus gastos crescem na mesma proporção (ou mais) que sua renda. Você ganha 20% a mais — e três meses depois gasta 20% a mais. O saldo não muda.",
+            "É tão comum que parece normal. A cada aumento, surgem uma nova assinatura, um apartamento maior, um carro mais novo, viagens mais caras. Cada escolha individual parece razoável. O padrão é que destrói o patrimônio.",
+            "A regra dos 50%: quando receber aumento, comprometa no máximo 50% dele com novos gastos. Os outros 50% vão direto para investimentos. Assim você melhora de vida e acumula patrimônio ao mesmo tempo."
+          ],
+          "dica_app": "Compare seus gastos por categoria no Gastô mês a mês. Se os totais crescem sem um motivo específico, é inflação de estilo de vida em ação.",
+          "link_externo": ""
+        },
+        {
+          "id": "comp-3",
+          "titulo": "Efeito ancoragem: como os preços enganam o cérebro",
+          "emoji": "⚓",
+          "nivel": "intermediário",
+          "tempo": "3 min",
+          "conteudo": [
+            "Ancoragem é quando usamos o primeiro número que vemos como referência para julgar se algo é caro ou barato. Uma camiseta 'de R$ 200 por R$ 80' parece um ótimo negócio — mesmo que o preço original fosse inventado.",
+            "Funciona em investimentos também. Se você comprou uma ação por R$ 50 e ela caiu para R$ 30, você resiste a vender porque está 'ancorado' no R$ 50. Mas o mercado não sabe (e não liga) quanto você pagou.",
+            "Como desancorar: sempre questione 'quanto isso realmente vale para mim?' em vez de 'quanto era antes?'. Para investimentos, avalie pelo potencial futuro, não pelo preço que você pagou."
+          ],
+          "dica_app": "No simulador do Gastô, mude o período de tempo e veja como o 'valor final' muda dramaticamente. Isso ajuda a tomar decisões baseadas em projeção, não em âncoras do passado.",
+          "link_externo": ""
+        },
+        {
+          "id": "comp-4",
+          "titulo": "Dinheiro emocional: como separar sentimentos de finanças",
+          "emoji": "❤️",
+          "nivel": "iniciante",
+          "tempo": "4 min",
+          "conteudo": [
+            "Compras emocionais são as que fazemos para regular o humor — compensar um dia ruim, comemorar uma vitória, aliviar o tédio. Não são necessariamente ruins, mas quando são automáticas e inconscientes, destroem o orçamento.",
+            "O gatilho mais comum no Brasil é o cartão de crédito: como o dinheiro 'não sai na hora', o cérebro registra menos a dor da compra. Estudos mostram que pessoas gastam 12% a 18% a mais no cartão do que no débito ou dinheiro.",
+            "Estratégia: identifique seus gatilhos emocionais. Cansaço? Tristeza? Entediado? Crie substitutos que não custam dinheiro — uma caminhada, ligar para alguém, assistir a algo que já tem. Reserve um 'fundo de prazer' mensal para gastar sem culpa."
+          ],
+          "dica_app": "Ao registrar uma despesa de Lazer no Gastô, adicione uma nota mental se foi planejada ou impulsiva. Com o tempo, você verá o padrão dos seus gastos emocionais.",
+          "link_externo": ""
+        },
+        {
+          "id": "comp-5",
+          "titulo": "O poder dos hábitos financeiros pequenos",
+          "emoji": "🌿",
+          "nivel": "iniciante",
+          "tempo": "3 min",
+          "conteudo": [
+            "Grandes mudanças financeiras raramente vêm de grandes decisões. Vêm do acúmulo de pequenos hábitos consistentes: registrar gastos todo dia, revisar o orçamento todo domingo, investir sempre no dia 5 do mês.",
+            "James Clear, no livro Hábitos Atômicos, mostra que uma melhora de 1% por dia resulta em 37 vezes melhor em um ano. O mesmo vale para finanças: cada pequeno hábito correto compõe ao longo do tempo.",
+            "Comece com apenas um hábito. Não tente mudar tudo de uma vez. Um hábito consolidado por 30 dias vira automático. Depois adicione o próximo."
+          ],
+          "dica_app": "Torne o registro diário no Gastô um hábito de 2 minutos por dia. Uma semana de consistência gera dados suficientes para tomar decisões melhores.",
           "link_externo": ""
         }
       ]

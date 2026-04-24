@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gastô — Controle financeiro sem complicação</title>
-  <meta name="description" content="App Android gratuito para controle de despesas com registro por voz ou texto, classificação automática offline, simulador de investimentos e educação financeira.">
+  <meta name="description" content="App Android gratuito para controle de despesas com registro por voz ou texto, classificação automática offline, score financeiro, metas por objetivo, desafios semanais, importação de CSV, widget nativo e 30 pílulas de educação financeira — tudo local, sem cadastro.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -32,7 +32,7 @@
       <div class="hero-text">
         <div class="hero-tag">Android · Gratuito · Open Source</div>
         <h1>Suas finanças<br><span class="gradient-text">no controle</span></h1>
-        <p class="hero-desc">Registre despesas falando ou digitando em linguagem natural. Acompanhe notícias do mercado, simule investimentos e aprenda com pílulas de educação financeira — tudo offline, sem cadastro.</p>
+        <p class="hero-desc">Registre despesas falando ou digitando em linguagem natural. Score financeiro, metas por objetivo, desafios semanais, importação de extrato e widget na tela inicial — tudo offline, sem cadastro.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="https://github.com/jeffev/gasto/releases/latest/download/gasto.apk">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -50,7 +50,7 @@
           <div class="stat-div"></div>
           <div class="stat"><strong>6</strong><span>Abas do app</span></div>
           <div class="stat-div"></div>
-          <div class="stat"><strong>18</strong><span>Pílulas educativas</span></div>
+          <div class="stat"><strong>30</strong><span>Pílulas educativas</span></div>
         </div>
       </div>
       <div class="hero-phone">
@@ -164,7 +164,7 @@
         <div class="feature-card">
           <div class="feature-emoji">🎓</div>
           <h3>Educação financeira</h3>
-          <p>18 pílulas organizadas em 4 trilhas: sair das dívidas, fazer o dinheiro render, investir no exterior e fundamentos. Com dicas práticas no app.</p>
+          <p>30 pílulas organizadas em 5 trilhas: dívidas, render, exterior, fundamentos e comportamento financeiro. Com dicas práticas no app.</p>
         </div>
 
         <div class="feature-card">
@@ -189,6 +189,54 @@
           <div class="feature-emoji">🔒</div>
           <h3>Dados só seus</h3>
           <p>Banco SQLite local no celular. Sem cadastro, sem login, sem nuvem. Seus dados financeiros ficam apenas com você.</p>
+        </div>
+
+        <div class="feature-card feature-highlight">
+          <div class="feature-emoji">🏅</div>
+          <h3>Score financeiro mensal</h3>
+          <p>Nota 0–100 calculada automaticamente: taxa de poupança (40 pts), orçamentos respeitados (35 pts) e meta de economia (25 pts). Acompanhe sua evolução mês a mês.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">💡</div>
+          <h3>Análise de padrões</h3>
+          <p>Insights automáticos baseados no seu histórico: categorias em crescimento, gastos maiores em fins de semana, total de assinaturas e tendência dos últimos 3 meses.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">🏆</div>
+          <h3>Metas por objetivo</h3>
+          <p>Crie objetivos com nome, emoji, valor-alvo e prazo. Veja a barra de progresso e o aporte mensal necessário calculado em tempo real.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">🔢</div>
+          <h3>Calculadora de independência financeira</h3>
+          <p>Usa seus gastos médios reais para calcular o patrimônio-alvo pela regra dos 4% e estima em quantos anos você chegaria à independência com o aporte atual.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">📉</div>
+          <h3>Comparativo com inflação</h3>
+          <p>Cada categoria nos relatórios mostra se cresceu acima ou abaixo do IPCA do período — direto da API do Banco Central, sem configuração.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">💪</div>
+          <h3>Modo desafio semanal</h3>
+          <p>Desafios gerados automaticamente a partir do seu gasto médio por categoria. Aceite, monitore o progresso e conclua ao fim da semana.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">📂</div>
+          <h3>Importar extrato CSV</h3>
+          <p>Importe o extrato de qualquer banco em CSV. O app detecta separador, colunas e datas automaticamente, classifica cada linha e deixa você revisar antes de salvar.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-emoji">📱</div>
+          <h3>Widget Android</h3>
+          <p>Saldo do mês sempre visível na tela inicial. O widget nativo lê o banco local diretamente e atualiza a cada 30 minutos — sem abrir o app.</p>
         </div>
 
       </div>
@@ -383,6 +431,20 @@
           <div class="tech-info">
             <strong>react-native-svg</strong>
             <span>Gráficos vetoriais para os relatórios mensais sem dependências pesadas</span>
+          </div>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">📂</div>
+          <div class="tech-info">
+            <strong>expo-document-picker + parser TS</strong>
+            <span>Importação de CSV com detecção automática de separador, colunas e formatos de data</span>
+          </div>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">📱</div>
+          <div class="tech-info">
+            <strong>Android AppWidgetProvider (Kotlin)</strong>
+            <span>Widget nativo que lê o SQLite diretamente — exibe o saldo sem abrir o app</span>
           </div>
         </div>
       </div>

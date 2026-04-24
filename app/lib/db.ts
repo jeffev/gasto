@@ -60,6 +60,31 @@ async function migrate(db: SQLite.SQLiteDatabase) {
   try { await db.execAsync(`ALTER TABLE despesas ADD COLUMN pago INTEGER DEFAULT 0`); } catch {}
 
   await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS desafios (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      categoria    TEXT    NOT NULL,
+      descricao    TEXT    NOT NULL,
+      meta_valor   REAL    NOT NULL,
+      inicio       TEXT    NOT NULL,
+      fim          TEXT    NOT NULL,
+      aceito       INTEGER DEFAULT 0,
+      concluido    INTEGER DEFAULT 0
+    );
+  `);
+
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS objetivos (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome        TEXT    NOT NULL,
+      emoji       TEXT    NOT NULL DEFAULT '🎯',
+      valor_alvo  REAL    NOT NULL,
+      valor_atual REAL    NOT NULL DEFAULT 0,
+      prazo       TEXT    NOT NULL,
+      criado_em   TEXT    DEFAULT (datetime('now','localtime'))
+    );
+  `);
+
+  await db.execAsync(`
     CREATE TABLE IF NOT EXISTS aprendizado (
       id          TEXT PRIMARY KEY,
       concluido   INTEGER DEFAULT 0,
@@ -386,6 +411,159 @@ export async function listarRecorrentesParaProximoMes(): Promise<{ despesas: Des
 }
 
 // ---------------------------------------------------------------------------
+// Desafios
+// ---------------------------------------------------------------------------
+
+export interface Desafio {
+  id: number;
+  categoria: string;
+  descricao: string;
+  meta_valor: number;
+  inicio: string;
+  fim: string;
+  aceito: number;
+  concluido: number;
+}
+
+export async function listarDesafios(): Promise<Desafio[]> {
+  const db = await getDb();
+  return db.getAllAsync<Desafio>(`SELECT * FROM desafios ORDER BY id DESC LIMIT 10`);
+}
+
+export async function inserirDesafio(params: Omit<Desafio, "id">): Promise<number> {
+  const db = await getDb();
+  const r = await db.runAsync(
+    `INSERT INTO desafios (categoria, descricao, meta_valor, inicio, fim, aceito, concluido) VALUES (?,?,?,?,?,?,?)`,
+    params.categoria, params.descricao, params.meta_valor, params.inicio, params.fim, params.aceito, params.concluido
+  );
+  return r.lastInsertRowId;
+}
+
+export async function aceitarDesafio(id: number): Promise<void> {
+  const db = await getDb();
+  await db.runAsync(`UPDATE desafios SET aceito = 1 WHERE id = ?`, id);
+}
+
+export async function verificarConclusaoDesafio(id: number, inicio: string, fim: string, categoria: string, metaValor: number): Promise<boolean> {
+  const db = await getDb();
+  const row = await db.getFirstAsync<{ total: number }>(
+    `SELECT COALESCE(SUM(valor), 0) as total FROM despesas
+     WHERE categoria = ? AND data >= ? AND data <= ?`,
+    categoria, inicio, fim
+  );
+  const total = row?.total ?? 0;
+  const concluido = total <= metaValor ? 1 : 0;
+  await db.runAsync(`UPDATE desafios SET concluido = ? WHERE id = ?`, concluido, id);
+  return concluido === 1;
+}
+
+export async function gastoMedioSemanalPorCategoria(): Promise<Array<{ categoria: string; mediaGasto: number }>> {
+  const db = await getDb();
+  const agora = new Date();
+  // Últimas 4 semanas completas
+  const dataLimite = new Date(agora.getTime() - 28 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+  return db.getAllAsync<{ categoria: string; mediaGasto: number }>(
+    `SELECT categoria,
+            SUM(valor) / 4.0 as mediaGasto
+     FROM despesas
+     WHERE data >= ? AND categoria NOT IN ('Assinaturas')
+     GROUP BY categoria
+     HAVING SUM(valor) > 0
+     ORDER BY mediaGasto DESC`,
+    dataLimite
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Objetivos
+// ---------------------------------------------------------------------------
+
+export interface Objetivo {
+  id: number;
+  nome: string;
+  emoji: string;
+  valor_alvo: number;
+  valor_atual: number;
+  prazo: string;
+  criado_em: string;
+}
+
+export async function listarObjetivos(): Promise<Objetivo[]> {
+  const db = await getDb();
+  return db.getAllAsync<Objetivo>(`SELECT * FROM objetivos ORDER BY prazo ASC`);
+}
+
+export async function inserirObjetivo(params: Omit<Objetivo, "id" | "criado_em">): Promise<number> {
+  const db = await getDb();
+  const r = await db.runAsync(
+    `INSERT INTO objetivos (nome, emoji, valor_alvo, valor_atual, prazo) VALUES (?,?,?,?,?)`,
+    params.nome, params.emoji, params.valor_alvo, params.valor_atual, params.prazo
+  );
+  return r.lastInsertRowId;
+}
+
+export async function atualizarObjetivo(params: Pick<Objetivo, "id" | "nome" | "emoji" | "valor_alvo" | "valor_atual" | "prazo">): Promise<void> {
+  const db = await getDb();
+  await db.runAsync(
+    `UPDATE objetivos SET nome=?, emoji=?, valor_alvo=?, valor_atual=?, prazo=? WHERE id=?`,
+    params.nome, params.emoji, params.valor_alvo, params.valor_atual, params.prazo, params.id
+  );
+}
+
+export async function deletarObjetivo(id: number): Promise<void> {
+  const db = await getDb();
+  await db.runAsync(`DELETE FROM objetivos WHERE id=?`, id);
+}
+
+// ---------------------------------------------------------------------------
+// Análise de padrões
+// ---------------------------------------------------------------------------
+
+export interface InsightDados {
+  totalPorCategoriaMes: Array<{ mes: string; categoria: string; total: number }>;
+  totalPorDiaSemana: Array<{ dow: number; total: number; qtd: number }>;
+  assinaturas: Array<{ descricao: string; valor: number }>;
+}
+
+export async function buscarDadosInsights(): Promise<InsightDados> {
+  const db = await getDb();
+  const agora = new Date();
+
+  // Últimos 3 meses completos + mês atual
+  const prefixos: string[] = [];
+  for (let i = 0; i <= 3; i++) {
+    const d = new Date(agora.getFullYear(), agora.getMonth() - i, 1);
+    prefixos.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  }
+  const placeholders = prefixos.map(() => "data LIKE ?").join(" OR ");
+  const args = prefixos.map((p) => `${p}%`);
+
+  const [porCategoriaMes, porDiaSemana, assinaturas] = await Promise.all([
+    // Total por categoria por mês
+    db.getAllAsync<{ mes: string; categoria: string; total: number }>(
+      `SELECT substr(data,1,7) as mes, categoria, SUM(valor) as total
+       FROM despesas WHERE (${placeholders}) GROUP BY mes, categoria`,
+      ...args
+    ),
+    // Total por dia da semana (0=Dom..6=Sab) — SQLite strftime %w
+    db.getAllAsync<{ dow: number; total: number; qtd: number }>(
+      `SELECT CAST(strftime('%w', data) AS INTEGER) as dow,
+              SUM(valor) as total, COUNT(*) as qtd
+       FROM despesas WHERE (${placeholders}) GROUP BY dow`,
+      ...args
+    ),
+    // Despesas recorrentes na categoria Assinaturas
+    db.getAllAsync<{ descricao: string; valor: number }>(
+      `SELECT descricao, AVG(valor) as valor FROM despesas
+       WHERE categoria = 'Assinaturas' AND recorrente = 1
+       GROUP BY descricao ORDER BY valor DESC`
+    ),
+  ]);
+
+  return { totalPorCategoriaMes: porCategoriaMes, totalPorDiaSemana: porDiaSemana, assinaturas };
+}
+
+// ---------------------------------------------------------------------------
 // Aprendizado
 // ---------------------------------------------------------------------------
 
@@ -404,6 +582,22 @@ export async function listarPilulasLidas(): Promise<Set<string>> {
     `SELECT id FROM aprendizado WHERE concluido = 1`
   );
   return new Set(rows.map((r) => r.id));
+}
+
+export async function mediaGastosMensais(nMeses = 3): Promise<number> {
+  const db = await getDb();
+  const agora = new Date();
+  const prefixos: string[] = [];
+  for (let i = 1; i <= nMeses; i++) {
+    const d = new Date(agora.getFullYear(), agora.getMonth() - i, 1);
+    prefixos.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  }
+  const placeholders = prefixos.map(() => "data LIKE ?").join(" OR ");
+  const row = await db.getFirstAsync<{ total: number }>(
+    `SELECT COALESCE(SUM(valor), 0) as total FROM despesas WHERE (${placeholders})`,
+    ...prefixos.map((p) => `${p}%`)
+  );
+  return (row?.total ?? 0) / nMeses;
 }
 
 export async function gerarEntradasRecorrentesDoMes(ano: number, mes: number): Promise<number> {
