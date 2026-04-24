@@ -24,9 +24,8 @@ export default function TabsLayout() {
         }],
         tabBarActiveTintColor: "#6C63FF",
         tabBarInactiveTintColor: t.textMuted,
-        tabBarLabelStyle: s.label,
+        tabBarShowLabel: false,
         tabBarItemStyle: s.tabItem,
-        tabBarAllowFontScaling: false,
       }}
     >
       <Tabs.Screen
@@ -79,9 +78,8 @@ export default function TabsLayout() {
 }
 
 const s = StyleSheet.create({
-  tabBar: { borderTopWidth: 1 },
-  label: { fontSize: 10, fontWeight: "600" },
-  tabItem: { paddingHorizontal: 0, minWidth: 0 },
-  icon: { fontSize: 18, opacity: 0.5 },
+  tabBar: { borderTopWidth: 1, height: 56 },
+  tabItem: { flex: 1, justifyContent: "center", alignItems: "center" },
+  icon: { fontSize: 24, opacity: 0.45 },
   iconFocused: { opacity: 1 },
 });
