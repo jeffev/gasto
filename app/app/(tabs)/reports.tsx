@@ -8,7 +8,6 @@ import {
   Text,
   TextInput,
   View,
-  Animated,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { fetchIndicadores } from "../../lib/bcb";
@@ -25,6 +24,7 @@ import {
 import { Despesa, Entrada, Orcamento } from "../../lib/types";
 import { getCategoria } from "../../constants/categories";
 import { getCategoriaEntrada } from "../../constants/incomeCategories";
+import { useTheme, Theme } from "../../lib/theme";
 
 const MESES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -47,7 +47,6 @@ function gerarInsights(dados: InsightDados, mesAtual: string): Insight[] {
   const insights: Insight[] = [];
   const { totalPorCategoriaMes, totalPorDiaSemana, assinaturas } = dados;
 
-  // 1. Crescimento de categoria nos últimos 2 meses
   const meses = [...new Set(totalPorCategoriaMes.map((r) => r.mes))].sort().slice(-3);
   if (meses.length >= 2) {
     const mesAnt = meses[meses.length - 2];
@@ -66,7 +65,6 @@ function gerarInsights(dados: InsightDados, mesAtual: string): Insight[] {
     }
   }
 
-  // 2. Gasto maior nos fins de semana vs dias úteis
   const fds = totalPorDiaSemana.filter((d) => d.dow === 0 || d.dow === 6);
   const semana = totalPorDiaSemana.filter((d) => d.dow >= 1 && d.dow <= 5);
   const mediaDia = (arr: typeof fds) => {
@@ -85,13 +83,11 @@ function gerarInsights(dados: InsightDados, mesAtual: string): Insight[] {
     }
   }
 
-  // 3. Total de assinaturas
   if (assinaturas.length > 0) {
     const total = assinaturas.reduce((s, a) => s + a.valor, 0);
     insights.push({ emoji: "📱", texto: `${assinaturas.length} assinatura${assinaturas.length > 1 ? "s" : ""} recorrente${assinaturas.length > 1 ? "s" : ""} somam R$ ${total.toFixed(0)}/mês`, tipo: total > 300 ? "atencao" : "neutro" });
   }
 
-  // 4. Tendência de 3 meses (total geral)
   if (meses.length >= 3) {
     const totaisMes = meses.map((m) =>
       totalPorCategoriaMes.filter((r) => r.mes === m).reduce((s, r) => s + r.total, 0)
@@ -119,7 +115,6 @@ function calcularScore(params: {
   const { totalEntradas, totalDespesas, saldo, meta, orcamentos, porCategoria } = params;
   const fatores: FatorScore[] = [];
 
-  // 1. Taxa de poupança (0–40 pts)
   let ptsPoupanca = 0;
   if (totalEntradas > 0) {
     const taxa = saldo / totalEntradas;
@@ -129,11 +124,10 @@ function calcularScore(params: {
   } else if (totalDespesas > 0) {
     fatores.push({ nome: "Taxa de poupança", pts: 0, max: 40, detalhe: "Sem entradas registradas" });
   } else {
-    ptsPoupanca = 20; // sem dados, neutro
+    ptsPoupanca = 20;
     fatores.push({ nome: "Taxa de poupança", pts: 20, max: 40, detalhe: "Sem dados este mês" });
   }
 
-  // 2. Orçamentos respeitados (0–35 pts)
   const catsComOrc = porCategoria.filter(c => orcamentos.some(o => o.categoria === c.categoria));
   if (catsComOrc.length > 0) {
     const respeitados = catsComOrc.filter(c => {
@@ -146,7 +140,6 @@ function calcularScore(params: {
     fatores.push({ nome: "Orçamentos", pts: 18, max: 35, detalhe: "Nenhum orçamento definido" });
   }
 
-  // 3. Meta de economia (0–25 pts)
   if (meta > 0) {
     const ptsMeta = saldo >= meta ? 25 : saldo <= 0 ? 0 : Math.round((saldo / meta) * 25);
     const pct = Math.min(Math.round((saldo / meta) * 100), 100);
@@ -169,9 +162,10 @@ function calcularScore(params: {
 // ---------------------------------------------------------------------------
 // Gráfico de pizza (donut)
 // ---------------------------------------------------------------------------
-function DonutChart({ data, size = 180 }: {
+function DonutChart({ data, size = 180, bgColor }: {
   data: { valor: number; cor: string }[];
   size?: number;
+  bgColor: string;
 }) {
   const total = data.reduce((s, d) => s + d.valor, 0);
   if (total === 0) return null;
@@ -196,7 +190,6 @@ function DonutChart({ data, size = 180 }: {
       const y2 = cy + r * Math.sin(end);
       const large = fraction > 0.5 ? 1 : 0;
 
-      // Slice fills from center
       const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
       return { path, cor: item.cor };
     });
@@ -207,8 +200,7 @@ function DonutChart({ data, size = 180 }: {
         {slices.map((slice, i) => (
           <Path key={i} d={slice.path} fill={slice.cor} />
         ))}
-        {/* Buraco central (donut) */}
-        <Circle cx={cx} cy={cy} r={innerR} fill="#fff" />
+        <Circle cx={cx} cy={cy} r={innerR} fill={bgColor} />
       </G>
     </Svg>
   );
@@ -219,6 +211,9 @@ function DonutChart({ data, size = 180 }: {
 // ---------------------------------------------------------------------------
 export default function ReportsScreen() {
   const router = useRouter();
+  const t = useTheme();
+  const s = makeStyles(t);
+
   const hoje = new Date();
   const [ano, setAno] = useState(hoje.getFullYear());
   const [mes, setMes] = useState(hoje.getMonth() + 1);
@@ -233,12 +228,10 @@ export default function ReportsScreen() {
   const [porCategoriaAnt, setPorCategoriaAnt] = useState<CategoriaTotais[]>([]);
   const [ipcaMes, setIpcaMes] = useState<number | null>(null);
 
-  // Meta de economia
   const [meta, setMeta] = useState(0);
   const [modalMeta, setModalMeta] = useState(false);
   const [metaStr, setMetaStr] = useState("");
 
-  // Insights
   const [insights, setInsights] = useState<Insight[]>([]);
 
   useFocusEffect(useCallback(() => { carregarDados(); }, [ano, mes]));
@@ -328,14 +321,7 @@ export default function ReportsScreen() {
 
   const saldo = totalEntradas - totalAtual;
   const variacao = totalAnterior > 0 ? ((totalAtual - totalAnterior) / totalAnterior) * 100 : null;
-  const scoreData = calcularScore({
-    totalEntradas,
-    totalDespesas: totalAtual,
-    saldo,
-    meta,
-    orcamentos,
-    porCategoria,
-  });
+  const scoreData = calcularScore({ totalEntradas, totalDespesas: totalAtual, saldo, meta, orcamentos, porCategoria });
   const maiorCategoria = porCategoria[0]?.total ?? 1;
   const isMesAtual = ano === hoje.getFullYear() && mes === hoje.getMonth() + 1;
   const topDespesas = [...despesas].sort((a, b) => b.valor - a.valor).slice(0, 5);
@@ -344,14 +330,12 @@ export default function ReportsScreen() {
   }, {});
   const diasComGasto = Object.entries(gastosPorDia).sort(([a], [b]) => a.localeCompare(b));
 
-  // Dados para o gráfico de pizza
   const pieData = porCategoria.map((item) => ({
     valor: item.total,
     cor: getCategoria(item.categoria).cor,
     label: item.categoria,
   }));
 
-  // Meta de economia
   const metaPct = meta > 0 ? Math.min((saldo / meta) * 100, 100) : 0;
   const metaAtingida = meta > 0 && saldo >= meta;
 
@@ -521,7 +505,7 @@ export default function ReportsScreen() {
           <View style={s.secao}>
             <Text style={s.secaoTitulo}>Distribuição</Text>
             <View style={s.pieWrapper}>
-              <DonutChart data={pieData} size={180} />
+              <DonutChart data={pieData} size={180} bgColor={t.surface} />
               <View style={s.pieLegenda}>
                 {pieData.slice(0, 6).map((item) => {
                   const pct = totalAtual > 0 ? Math.round((item.valor / totalAtual) * 100) : 0;
@@ -549,7 +533,6 @@ export default function ReportsScreen() {
               const orc = orcamentos.find(o => o.categoria === item.categoria);
               const ultrapassou = orc && item.total > orc.limite;
               const pctOrc = orc ? Math.min(Math.round((item.total / orc.limite) * 100), 100) : null;
-              // Comparativo inflação
               const totalAnt = porCategoriaAnt.find(c => c.categoria === item.categoria)?.total ?? 0;
               let inflacaoTag: { texto: string; cor: string } | null = null;
               if (totalAnt > 0 && ipcaMes !== null) {
@@ -699,7 +682,7 @@ export default function ReportsScreen() {
               value={metaStr}
               onChangeText={setMetaStr}
               placeholder="Ex: 500"
-              placeholderTextColor="#AAA"
+              placeholderTextColor={t.textMuted}
               keyboardType="decimal-pad"
               autoFocus
             />
@@ -722,143 +705,140 @@ export default function ReportsScreen() {
   );
 }
 
-const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#F4F5F7" },
-  scroll: { padding: 20, paddingBottom: 40 },
+function makeStyles(t: Theme) {
+  return StyleSheet.create({
+    safeArea: { flex: 1, backgroundColor: t.bg },
+    scroll: { padding: 20, paddingBottom: 40 },
 
-  mesNav: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16 },
-  navBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOpacity: 0.06, shadowOffset: { width: 0, height: 2 }, shadowRadius: 4, elevation: 2 },
-  navBtnDisabled: { backgroundColor: "#F0F0F0" },
-  navBtnText: { fontSize: 24, color: "#6C63FF", lineHeight: 28 },
-  navBtnTextDisabled: { color: "#CCC" },
-  mesInfo: { alignItems: "center" },
-  mesNome: { fontSize: 20, fontWeight: "700", color: "#1A1A2E" },
-  mesAno: { fontSize: 13, color: "#888", marginTop: 1 },
+    mesNav: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16 },
+    navBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: t.surface, justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOpacity: 0.06, shadowOffset: { width: 0, height: 2 }, shadowRadius: 4, elevation: 2 },
+    navBtnDisabled: { backgroundColor: t.divider },
+    navBtnText: { fontSize: 24, color: "#6C63FF", lineHeight: 28 },
+    navBtnTextDisabled: { color: t.textMuted },
+    mesInfo: { alignItems: "center" },
+    mesNome: { fontSize: 20, fontWeight: "700", color: t.text },
+    mesAno: { fontSize: 13, color: t.textMuted, marginTop: 1 },
 
-  totalCard: { backgroundColor: "#6C63FF", borderRadius: 20, padding: 24, marginBottom: 16, alignItems: "center" },
-  totalLabel: { color: "rgba(255,255,255,0.75)", fontSize: 13, fontWeight: "500" },
-  totalValor: { color: "#fff", fontSize: 38, fontWeight: "800", marginTop: 4 },
-  variacaoRow: { flexDirection: "row", alignItems: "center", marginTop: 8 },
-  variacaoText: { fontSize: 14, fontWeight: "700" },
-  variacaoCima: { color: "#FFB3B3" },
-  variacaoBaixo: { color: "#B3FFD9" },
-  variacaoDesc: { color: "rgba(255,255,255,0.65)", fontSize: 13 },
-  semDados: { color: "rgba(255,255,255,0.6)", fontSize: 13, marginTop: 8 },
-  cardAcoes: { flexDirection: "row", gap: 10, marginTop: 16 },
-  cardBtn: { flex: 1, backgroundColor: "rgba(255,255,255,0.2)", borderRadius: 12, paddingVertical: 10, alignItems: "center" },
-  cardBtnText: { color: "#fff", fontSize: 13, fontWeight: "700" },
+    totalCard: { backgroundColor: "#6C63FF", borderRadius: 20, padding: 24, marginBottom: 16, alignItems: "center" },
+    totalLabel: { color: "rgba(255,255,255,0.75)", fontSize: 13, fontWeight: "500" },
+    totalValor: { color: "#fff", fontSize: 38, fontWeight: "800", marginTop: 4 },
+    variacaoRow: { flexDirection: "row", alignItems: "center", marginTop: 8 },
+    variacaoText: { fontSize: 14, fontWeight: "700" },
+    variacaoCima: { color: "#FFB3B3" },
+    variacaoBaixo: { color: "#B3FFD9" },
+    variacaoDesc: { color: "rgba(255,255,255,0.65)", fontSize: 13 },
+    semDados: { color: "rgba(255,255,255,0.6)", fontSize: 13, marginTop: 8 },
+    cardAcoes: { flexDirection: "row", gap: 10, marginTop: 16 },
+    cardBtn: { flex: 1, backgroundColor: "rgba(255,255,255,0.2)", borderRadius: 12, paddingVertical: 10, alignItems: "center" },
+    cardBtnText: { color: "#fff", fontSize: 13, fontWeight: "700" },
 
-  saldoCard: { backgroundColor: "#fff", borderRadius: 20, padding: 20, marginBottom: 16, flexDirection: "row", shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 1 },
-  saldoItem: { flex: 1, alignItems: "center" },
-  saldoItemLabel: { fontSize: 12, color: "#888", marginBottom: 4, fontWeight: "500" },
-  saldoItemEntrada: { fontSize: 14, fontWeight: "800", color: "#2ECC71" },
-  saldoItemSaida: { fontSize: 14, fontWeight: "800", color: "#FF4757" },
-  saldoItemValor: { fontSize: 14, fontWeight: "800" },
-  saldoPos: { color: "#2ECC71" },
-  saldoNeg: { color: "#FF4757" },
-  saldoDivider: { width: 1, backgroundColor: "#F0F0F0", marginVertical: 4 },
+    saldoCard: { backgroundColor: t.surface, borderRadius: 20, padding: 20, marginBottom: 16, flexDirection: "row", shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 1 },
+    saldoItem: { flex: 1, alignItems: "center" },
+    saldoItemLabel: { fontSize: 12, color: t.textMuted, marginBottom: 4, fontWeight: "500" },
+    saldoItemEntrada: { fontSize: 14, fontWeight: "800", color: "#2ECC71" },
+    saldoItemSaida: { fontSize: 14, fontWeight: "800", color: "#FF4757" },
+    saldoItemValor: { fontSize: 14, fontWeight: "800" },
+    saldoPos: { color: "#2ECC71" },
+    saldoNeg: { color: "#FF4757" },
+    saldoDivider: { width: 1, backgroundColor: t.divider, marginVertical: 4 },
 
-  // Insights
-  insightsCard: { backgroundColor: "#fff", borderRadius: 20, padding: 20, marginBottom: 16, shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 1 },
-  insightsTitulo: { fontSize: 15, fontWeight: "700", color: "#1A1A2E", marginBottom: 12 },
-  insightRow: { flexDirection: "row", alignItems: "flex-start", gap: 10, padding: 12, borderRadius: 12, borderLeftWidth: 3, marginBottom: 8 },
-  insightEmoji: { fontSize: 16, lineHeight: 22 },
-  insightTexto: { flex: 1, fontSize: 13, color: "#333", lineHeight: 20 },
+    insightsCard: { backgroundColor: t.surface, borderRadius: 20, padding: 20, marginBottom: 16, shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 1 },
+    insightsTitulo: { fontSize: 15, fontWeight: "700", color: t.text, marginBottom: 12 },
+    insightRow: { flexDirection: "row", alignItems: "flex-start", gap: 10, padding: 12, borderRadius: 12, borderLeftWidth: 3, marginBottom: 8 },
+    insightEmoji: { fontSize: 16, lineHeight: 22 },
+    insightTexto: { flex: 1, fontSize: 13, color: t.textSub, lineHeight: 20 },
 
-  // Score financeiro
-  scoreCard: { backgroundColor: "#fff", borderRadius: 20, padding: 20, marginBottom: 16, shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 1 },
-  scoreHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
-  scoreTitulo: { fontSize: 15, fontWeight: "700", color: "#1A1A2E" },
-  scoreMes: { fontSize: 12, color: "#AAA", marginTop: 2 },
-  scoreCirculo: { width: 64, height: 64, borderRadius: 32, borderWidth: 3, justifyContent: "center", alignItems: "center" },
-  scoreNumero: { fontSize: 22, fontWeight: "800", lineHeight: 26 },
-  scoreDe: { fontSize: 10, color: "#AAA", lineHeight: 12 },
-  scoreLabelRow: { borderRadius: 10, paddingVertical: 6, paddingHorizontal: 12, alignSelf: "flex-start", marginBottom: 14 },
-  scoreLabel: { fontSize: 13, fontWeight: "700" },
-  scoreFatorRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 },
-  scoreFatorInfo: { flex: 1, marginRight: 12 },
-  scoreFatorNome: { fontSize: 13, fontWeight: "600", color: "#333" },
-  scoreFatorDetalhe: { fontSize: 11, color: "#AAA", marginTop: 1 },
-  scoreFatorBarWrap: { flexDirection: "row", alignItems: "center", gap: 6, width: 110 },
-  scoreFatorBarFundo: { flex: 1, height: 6, backgroundColor: "#F0F0F0", borderRadius: 3, overflow: "hidden" },
-  scoreFatorBarFill: { height: 6, borderRadius: 3 },
-  scoreFatorPts: { fontSize: 11, fontWeight: "700", width: 32, textAlign: "right" },
+    scoreCard: { backgroundColor: t.surface, borderRadius: 20, padding: 20, marginBottom: 16, shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 1 },
+    scoreHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
+    scoreTitulo: { fontSize: 15, fontWeight: "700", color: t.text },
+    scoreMes: { fontSize: 12, color: t.textMuted, marginTop: 2 },
+    scoreCirculo: { width: 64, height: 64, borderRadius: 32, borderWidth: 3, justifyContent: "center", alignItems: "center" },
+    scoreNumero: { fontSize: 22, fontWeight: "800", lineHeight: 26 },
+    scoreDe: { fontSize: 10, color: t.textMuted, lineHeight: 12 },
+    scoreLabelRow: { borderRadius: 10, paddingVertical: 6, paddingHorizontal: 12, alignSelf: "flex-start", marginBottom: 14 },
+    scoreLabel: { fontSize: 13, fontWeight: "700" },
+    scoreFatorRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 },
+    scoreFatorInfo: { flex: 1, marginRight: 12 },
+    scoreFatorNome: { fontSize: 13, fontWeight: "600", color: t.text },
+    scoreFatorDetalhe: { fontSize: 11, color: t.textMuted, marginTop: 1 },
+    scoreFatorBarWrap: { flexDirection: "row", alignItems: "center", gap: 6, width: 110 },
+    scoreFatorBarFundo: { flex: 1, height: 6, backgroundColor: t.divider, borderRadius: 3, overflow: "hidden" },
+    scoreFatorBarFill: { height: 6, borderRadius: 3 },
+    scoreFatorPts: { fontSize: 11, fontWeight: "700", width: 32, textAlign: "right" },
 
-  // Meta de economia
-  metaCard: { backgroundColor: "#fff", borderRadius: 20, padding: 20, marginBottom: 16, shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 1 },
-  metaHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
-  metaTitulo: { fontSize: 15, fontWeight: "700", color: "#1A1A2E" },
-  metaEditar: { fontSize: 13, color: "#6C63FF", fontWeight: "600" },
-  metaValores: { flexDirection: "row", alignItems: "baseline", gap: 6, marginBottom: 10 },
-  metaSaldo: { fontSize: 26, fontWeight: "800", color: "#1A1A2E" },
-  metaDe: { fontSize: 14, color: "#888" },
-  metaBarraFundo: { height: 10, backgroundColor: "#F0F0F0", borderRadius: 5, overflow: "hidden", marginBottom: 8 },
-  metaBarraPreench: { height: 10, borderRadius: 5 },
-  metaBarraOk: { backgroundColor: "#2ECC71" },
-  metaBarraParcial: { backgroundColor: "#6C63FF" },
-  metaBarraNeg: { backgroundColor: "#FF4757" },
-  metaStatus: { fontSize: 13, color: "#888", fontWeight: "500" },
-  metaStatusOk: { color: "#2ECC71", fontWeight: "700" },
-  metaVazia: { fontSize: 13, color: "#AAA", lineHeight: 18 },
+    metaCard: { backgroundColor: t.surface, borderRadius: 20, padding: 20, marginBottom: 16, shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 1 },
+    metaHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
+    metaTitulo: { fontSize: 15, fontWeight: "700", color: t.text },
+    metaEditar: { fontSize: 13, color: "#6C63FF", fontWeight: "600" },
+    metaValores: { flexDirection: "row", alignItems: "baseline", gap: 6, marginBottom: 10 },
+    metaSaldo: { fontSize: 26, fontWeight: "800", color: t.text },
+    metaDe: { fontSize: 14, color: t.textMuted },
+    metaBarraFundo: { height: 10, backgroundColor: t.divider, borderRadius: 5, overflow: "hidden", marginBottom: 8 },
+    metaBarraPreench: { height: 10, borderRadius: 5 },
+    metaBarraOk: { backgroundColor: "#2ECC71" },
+    metaBarraParcial: { backgroundColor: "#6C63FF" },
+    metaBarraNeg: { backgroundColor: "#FF4757" },
+    metaStatus: { fontSize: 13, color: t.textMuted, fontWeight: "500" },
+    metaStatusOk: { color: "#2ECC71", fontWeight: "700" },
+    metaVazia: { fontSize: 13, color: t.textMuted, lineHeight: 18 },
 
-  secao: { backgroundColor: "#fff", borderRadius: 20, padding: 20, marginBottom: 16, shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 1 },
-  secaoTitulo: { fontSize: 15, fontWeight: "700", color: "#1A1A2E", marginBottom: 16 },
+    secao: { backgroundColor: t.surface, borderRadius: 20, padding: 20, marginBottom: 16, shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6, elevation: 1 },
+    secaoTitulo: { fontSize: 15, fontWeight: "700", color: t.text, marginBottom: 16 },
 
-  // Pizza
-  pieWrapper: { flexDirection: "row", alignItems: "center", gap: 16 },
-  pieLegenda: { flex: 1, gap: 8 },
-  pieLegendaItem: { flexDirection: "row", alignItems: "center", gap: 8 },
-  pieLegendaDot: { width: 10, height: 10, borderRadius: 5 },
-  pieLegendaLabel: { flex: 1, fontSize: 12, color: "#444", fontWeight: "500" },
-  pieLegendaPct: { fontSize: 12, fontWeight: "700", color: "#1A1A2E" },
+    pieWrapper: { flexDirection: "row", alignItems: "center", gap: 16 },
+    pieLegenda: { flex: 1, gap: 8 },
+    pieLegendaItem: { flexDirection: "row", alignItems: "center", gap: 8 },
+    pieLegendaDot: { width: 10, height: 10, borderRadius: 5 },
+    pieLegendaLabel: { flex: 1, fontSize: 12, color: t.textSub, fontWeight: "500" },
+    pieLegendaPct: { fontSize: 12, fontWeight: "700", color: t.text },
 
-  catRow: { marginBottom: 14 },
-  catRowTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 6 },
-  catRowLeft: { flexDirection: "row", alignItems: "center", gap: 8, flex: 1 },
-  catDot: { width: 8, height: 8, borderRadius: 4 },
-  catNome: { fontSize: 14, color: "#333", fontWeight: "500" },
-  overTag: { fontSize: 12 },
-  catRowRight: { flexDirection: "row", alignItems: "center", gap: 8 },
-  catPct: { fontSize: 12, color: "#AAA", fontWeight: "600", width: 32, textAlign: "right" },
-  catValor: { fontSize: 14, fontWeight: "700", color: "#1A1A2E", width: 90, textAlign: "right" },
-  barraFundo: { height: 6, backgroundColor: "#F0F0F0", borderRadius: 3, overflow: "hidden" },
-  barraPreenchimento: { height: 6, borderRadius: 3 },
-  orcamentoHint: { fontSize: 11, color: "#AAA", marginTop: 4 },
-  inflacaoHint: { fontSize: 11, fontWeight: "600", marginTop: 3 },
+    catRow: { marginBottom: 14 },
+    catRowTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 6 },
+    catRowLeft: { flexDirection: "row", alignItems: "center", gap: 8, flex: 1 },
+    catDot: { width: 8, height: 8, borderRadius: 4 },
+    catNome: { fontSize: 14, color: t.textSub, fontWeight: "500" },
+    overTag: { fontSize: 12 },
+    catRowRight: { flexDirection: "row", alignItems: "center", gap: 8 },
+    catPct: { fontSize: 12, color: t.textMuted, fontWeight: "600", width: 32, textAlign: "right" },
+    catValor: { fontSize: 14, fontWeight: "700", color: t.text, width: 90, textAlign: "right" },
+    barraFundo: { height: 6, backgroundColor: t.divider, borderRadius: 3, overflow: "hidden" },
+    barraPreenchimento: { height: 6, borderRadius: 3 },
+    orcamentoHint: { fontSize: 11, color: t.textMuted, marginTop: 4 },
+    inflacaoHint: { fontSize: 11, fontWeight: "600", marginTop: 3 },
 
-  entradaValor: { fontSize: 14, fontWeight: "700", color: "#2ECC71" },
-  topRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 12 },
-  topNum: { fontSize: 13, fontWeight: "700", color: "#CCC", width: 16, textAlign: "center" },
-  topIcone: { width: 40, height: 40, borderRadius: 12, justifyContent: "center", alignItems: "center" },
-  topInfo: { flex: 1 },
-  topDesc: { fontSize: 14, fontWeight: "600", color: "#1A1A2E" },
-  topCat: { fontSize: 12, color: "#AAA", marginTop: 1 },
-  topValor: { fontSize: 14, fontWeight: "700", color: "#1A1A2E" },
+    entradaValor: { fontSize: 14, fontWeight: "700", color: "#2ECC71" },
+    topRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 12 },
+    topNum: { fontSize: 13, fontWeight: "700", color: t.textMuted, width: 16, textAlign: "center" },
+    topIcone: { width: 40, height: 40, borderRadius: 12, justifyContent: "center", alignItems: "center" },
+    topInfo: { flex: 1 },
+    topDesc: { fontSize: 14, fontWeight: "600", color: t.text },
+    topCat: { fontSize: 12, color: t.textMuted, marginTop: 1 },
+    topValor: { fontSize: 14, fontWeight: "700", color: t.text },
 
-  diasContainer: { flexDirection: "row", alignItems: "flex-end", gap: 6, flexWrap: "wrap" },
-  diaCol: { alignItems: "center", gap: 4, minWidth: 28 },
-  diaValorMini: { fontSize: 9, color: "#AAA", fontWeight: "500" },
-  diaBar: { width: 18, borderRadius: 4 },
-  diaDia: { fontSize: 10, color: "#AAA" },
-  diaDiaHoje: { color: "#6C63FF", fontWeight: "700" },
+    diasContainer: { flexDirection: "row", alignItems: "flex-end", gap: 6, flexWrap: "wrap" },
+    diaCol: { alignItems: "center", gap: 4, minWidth: 28 },
+    diaValorMini: { fontSize: 9, color: t.textMuted, fontWeight: "500" },
+    diaBar: { width: 18, borderRadius: 4 },
+    diaDia: { fontSize: 10, color: t.textMuted },
+    diaDiaHoje: { color: "#6C63FF", fontWeight: "700" },
 
-  simuladorBtn: { marginHorizontal: 16, marginTop: 16, marginBottom: 8, backgroundColor: "#6C63FF", borderRadius: 18, padding: 18, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  simuladorBtnInner: { flexDirection: "row", alignItems: "center", gap: 14, flex: 1 },
-  simuladorEmoji: { fontSize: 28 },
-  simuladorTitulo: { color: "#fff", fontSize: 15, fontWeight: "700" },
-  simuladorSub: { color: "rgba(255,255,255,0.75)", fontSize: 12, marginTop: 2 },
-  simuladorSeta: { color: "#fff", fontSize: 20, fontWeight: "700" },
+    simuladorBtn: { marginHorizontal: 16, marginTop: 16, marginBottom: 8, backgroundColor: "#6C63FF", borderRadius: 18, padding: 18, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+    simuladorBtnInner: { flexDirection: "row", alignItems: "center", gap: 14, flex: 1 },
+    simuladorEmoji: { fontSize: 28 },
+    simuladorTitulo: { color: "#fff", fontSize: 15, fontWeight: "700" },
+    simuladorSub: { color: "rgba(255,255,255,0.75)", fontSize: 12, marginTop: 2 },
+    simuladorSeta: { color: "#fff", fontSize: 20, fontWeight: "700" },
 
-  // Modal meta
-  modalBackdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "flex-end" },
-  modalSheet: { backgroundColor: "#fff", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 40 },
-  modalHandle: { width: 40, height: 4, backgroundColor: "#DDD", borderRadius: 2, alignSelf: "center", marginBottom: 20 },
-  modalTitulo: { fontSize: 20, fontWeight: "700", color: "#1A1A2E", marginBottom: 6 },
-  modalSub: { fontSize: 14, color: "#888", marginBottom: 20 },
-  modalInput: { borderWidth: 1.5, borderColor: "#E0E0E0", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 24, fontWeight: "700", color: "#1A1A2E", marginBottom: 20 },
-  modalBtns: { flexDirection: "row", gap: 10 },
-  modalBtnRemover: { flex: 1, paddingVertical: 14, borderRadius: 12, borderWidth: 1.5, borderColor: "#FF4757", alignItems: "center" },
-  modalBtnRemoverText: { color: "#FF4757", fontSize: 15, fontWeight: "600" },
-  modalBtnSalvar: { flex: 2, paddingVertical: 14, borderRadius: 12, backgroundColor: "#6C63FF", alignItems: "center" },
-  modalBtnSalvarText: { color: "#fff", fontSize: 15, fontWeight: "700" },
-});
+    modalBackdrop: { flex: 1, backgroundColor: t.modalBackdrop, justifyContent: "flex-end" },
+    modalSheet: { backgroundColor: t.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 40 },
+    modalHandle: { width: 40, height: 4, backgroundColor: t.handle, borderRadius: 2, alignSelf: "center", marginBottom: 20 },
+    modalTitulo: { fontSize: 20, fontWeight: "700", color: t.text, marginBottom: 6 },
+    modalSub: { fontSize: 14, color: t.textSub, marginBottom: 20 },
+    modalInput: { borderWidth: 1.5, borderColor: t.border, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 24, fontWeight: "700", color: t.text, backgroundColor: t.inputBg, marginBottom: 20 },
+    modalBtns: { flexDirection: "row", gap: 10 },
+    modalBtnRemover: { flex: 1, paddingVertical: 14, borderRadius: 12, borderWidth: 1.5, borderColor: "#FF4757", alignItems: "center" },
+    modalBtnRemoverText: { color: "#FF4757", fontSize: 15, fontWeight: "600" },
+    modalBtnSalvar: { flex: 2, paddingVertical: 14, borderRadius: 12, backgroundColor: "#6C63FF", alignItems: "center" },
+    modalBtnSalvarText: { color: "#fff", fontSize: 15, fontWeight: "700" },
+  });
+}

@@ -25,6 +25,8 @@ export default function TabsLayout() {
         tabBarActiveTintColor: "#6C63FF",
         tabBarInactiveTintColor: t.textMuted,
         tabBarLabelStyle: s.label,
+        tabBarItemStyle: s.tabItem,
+        tabBarAllowFontScaling: false,
       }}
     >
       <Tabs.Screen
@@ -45,7 +47,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="reports"
         options={{
-          title: "Relatórios",
+          title: "Relatório",
           tabBarIcon: ({ focused }) => <TabIcon emoji="📊" focused={focused} />,
         }}
       />
@@ -78,7 +80,8 @@ export default function TabsLayout() {
 
 const s = StyleSheet.create({
   tabBar: { borderTopWidth: 1 },
-  label: { fontSize: 11, fontWeight: "600" },
-  icon: { fontSize: 20, opacity: 0.5 },
+  label: { fontSize: 10, fontWeight: "600" },
+  tabItem: { paddingHorizontal: 0, minWidth: 0 },
+  icon: { fontSize: 18, opacity: 0.5 },
   iconFocused: { opacity: 1 },
 });
