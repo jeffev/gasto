@@ -93,6 +93,9 @@ export default function LearnScreen() {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={s.trilhasRow}
+        snapToInterval={118}
+        decelerationRate="fast"
+        snapToAlignment="start"
       >
         {data.trilhas.map((trilha) => {
           const ativo = trilha.id === trilhaAtiva;
@@ -171,10 +174,10 @@ const s = StyleSheet.create({
   titulo: { fontSize: 24, fontWeight: "800" },
   subtitulo: { fontSize: 13, marginTop: 2 },
 
-  trilhasRow: { paddingHorizontal: 16, paddingVertical: 14, gap: 10 },
-  trilhaCard: { width: 140, borderRadius: 16, borderWidth: 1.5, padding: 14, gap: 8 },
-  trilhaEmoji: { fontSize: 26 },
-  trilhaTitulo: { fontSize: 13, fontWeight: "700", lineHeight: 18 },
+  trilhasRow: { paddingHorizontal: 16, paddingVertical: 14, gap: 8 },
+  trilhaCard: { width: 110, borderRadius: 16, borderWidth: 1.5, padding: 12, gap: 6 },
+  trilhaEmoji: { fontSize: 22 },
+  trilhaTitulo: { fontSize: 12, fontWeight: "700", lineHeight: 16 },
   progTrack: { height: 4, borderRadius: 2, overflow: "hidden" },
   progFill: { height: 4, borderRadius: 2 },
 
